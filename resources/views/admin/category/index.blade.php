@@ -7,24 +7,45 @@
 </style>
 @section('content')
   <div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><a href="{{ route('dashboard') }}" class="fw-light">Asosiy / </a>Kategoriyalar </h4>
     <div class="row">
       <div class="col-md-12">
         <div class="card mb-4">
           <div class="card-header">Yangi kategoriya yaratish</div>
           <div class="card-body">
             @if (isset($category))
-              <form method="POST"  action="{{ route('categories.update', $category->id) }}">
+              <form method="POST" action="{{ route('categories.update', $category->id) }}">
               @method('PUT')
             @else
-              <form method="POST"  action="{{ route('categories.store') }}">
+              <form method="POST" action="{{ route('categories.store') }}">
             @endif
               @csrf
               <div class="row">
-                <div class="mb-3 col-md-9">
+                <div class="mb-3 col-md-5">
                   <label for="name" class="form-label">Nomi</label>
                   <input class="form-control" type="text" id="name" name="name" autofocus autocomplete="off" value="{{ $category->name ?? ''  }}" />
                 </div>
-                <div class="col-md-3">
+                <div class="mb-3 col-md-5">
+                  <label for="category" class="form-label">Kategoriya</label>
+                  <select class="form-select" id="category" name="parent_id">
+                    <option value="0">Asosiy</option>
+                    @foreach($parent_categories as $key => $value)
+                      <?php 
+                        $sub_categories = [];
+                        $sub_categories = DB::select('SELECT id, name FROM categories WHERE parent_id=?', [$value->id]);
+                      ?>
+                      <optgroup label="{{ $value->name }}">
+                        <option value="{{ $value->id }}">{{ $value->name }}</option>
+                        @if (!empty($sub_categories))
+                          @foreach($sub_categories as $k => $v)
+                            <option value="{{ $v->id }}">{{ $v->name }}</option>
+                          @endforeach
+                        @endif
+                      </optgroup>
+                    @endforeach
+                  </select>
+                </div>
+                <div class="col-md-2">
                     <button type="submit" class="btn btn-primary mt-4">Saqlash</button>
                 </div>
               </div>
@@ -33,7 +54,7 @@
         </div>
         @if (isset($categories))
           <div class="card">
-            <h5 class="card-header">Buyurtmachilar ro'yxati</h5>
+            <h5 class="card-header">Kategoriyalar ro'yxati</h5>
             <div class="card-body">
               <div class="table-responsive text-nowrap">
                 <table class="table table-bordered table-striped" id="category_table">

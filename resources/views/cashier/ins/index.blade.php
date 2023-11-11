@@ -49,14 +49,15 @@
         @if (isset($orders) && !empty($orders))
           <div class="card">
             <h5 class="card-header">Naryadlar ro'yxati</h5>
-            <div class="table-responsive text-nowrap m-3">
-              <table class="table table-bordered table-striped" id="order_table" style="width: 100%">
+            <div class="table-responsive text-nowrap">
+              <table class="table table-bordered table-hover" id="order_table" style="width: 100%">
                 <thead>
                   <tr>
-                    <th class="text-center align-middle" style="width: 20px;" rowspan="2">T/R</th>
+                    <th class="text-center align-middle" style="width: 20px;" rowspan="2">T/r</th>
                     <th class="text-center align-middle" rowspan="2">Shartnoma raqami</th>
                     <th class="text-center align-middle" rowspan="2">Xaridor</th>
                     <th class="text-center align-middle" colspan="4">Summa</th>
+                    <th class="text-center align-middle" style="width: 80px;" rowspan="2">Vaqti</th>
                     <th class="text-center align-middle" style="width: 80px;" rowspan="2"></th>
                   </tr>
                   <tr>
@@ -66,9 +67,10 @@
                     <th class="text-center">Qoldi</th>
                   </tr>
                   <tr>
-                    <td></td>
+                    <td><input class="form-control form-control-sm" type="text" placeholder="T/r"></td>
                     <td><input class="form-control form-control-sm" type="text" placeholder="Shartnoma raqami"></td>
                     <td><input class="form-control form-control-sm" type="text" placeholder="Xaridor"></td>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -79,13 +81,14 @@
                 <tbody>
                   @foreach($orders as $key => $value)
                     <tr>
-                      <td class="text-center">{{ $key + 1 }}</td>
+                      <td class="text-center">{{ $value->order_id }}</td>
                       <td>{{ $value->contract_number }}</td>
                       <td>{{ $value->customer }}</td>
                       <td>{{ number_format($value->contract_price, 2, ",", " ") }} so'm</td>
                       <td>{{ number_format($value->last_contract_price, 2, ",", " ") }} so'm</td>
                       <td>{{ is_null($value->payed) ? 0 : number_format($value->payed, 2, ",", " ") }} so'm</td>
                       <td>{{ is_null($value->debt) ? 0 : number_format($value->debt, 2, ",", " ") }} so'm</td>
+                      <td>{{ date('d.m.Y H:i:s', strtotime($value->manager_verified_time)) }}</td>
                       <td class="text-sm-end">
                         <button type="button" 
                                 data-bs-target="#createorderinsmodal" 
@@ -112,7 +115,7 @@
           <div class="card">
             <h5 class="card-header">Kirimlar ro'yxati</h5>
             <div class="table-responsive text-nowrap m-3">
-              <table class="table table-bordered table-striped" id="ins_table" style="width: 100%">
+              <table class="table table-bordered table-hover" id="ins_table" style="width: 100%">
                 <thead>
                   <tr>
                     <th class="text-center align-middle" style="width: 20px;" rowspan="2">T/R</th>
@@ -273,6 +276,10 @@
     $(document).ready(function() {
       let table = $('#order_table, #ins_table').DataTable({
         dom: 'Qrltp',
+        lengthMenu: [
+            [25, 50, 100],
+            [25, 50, 100]
+        ],
         "ordering": false
       });
 

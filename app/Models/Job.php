@@ -14,10 +14,21 @@ class Job extends Model
         'door_job',
         'transom_job',
         'jamb_job',
-        'door_attributes',
+        'nsjamb_job',
+        'crown_job',
+        'boot_job',
+        'cube_job',
+        'door_attributes'
     ];
 
     protected $hidden = [
-        'door_attributes', 'door_job', 'transom_job', 'jamb_job'
+        'door_job', 
+        'transom_job', 
+        'jamb_job',
+        'nsjamb_job',
+        'crown_job',
+        'boot_job',
+        'cube_job',
+        'door_attributes' 
     ];    
 }

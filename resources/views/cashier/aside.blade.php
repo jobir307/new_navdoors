@@ -58,7 +58,7 @@
           </g>
         </svg>
       </span>
-      <span class="app-brand-text demo menu-text fw-bolder ms-2">Navdoors</span>
+      <span class="app-brand-text demo menu-text fw-bolder ms-2">Muhtasham</span>
     </a>
 
     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
@@ -81,28 +81,66 @@
     </li>
     <?php 
       $active = "";
-      if (Request::segment(1) == 'ins')
+      $urls = array('show-order-payments', 'cashier-order');
+      if (in_array(Request::segment(1), $urls))
         $active = "active";
 
     ?>
     <li class="menu-item {{ $active }}">
-      <a href="{{ route('ins', $inout_type=1) }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-card"></i>
+      <a href="{{ route('cashier-order') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-detail"></i>
+        <div data-i18n="Basic">Shartnomalar</div>
+      </a>
+    </li>
+    <?php 
+        $active = "";
+        if (Request::segment(1) == 'ins')
+          $active = "active";
+
+    ?>
+    <li class="menu-item {{ $active }}">
+      <a href="{{ route('ins', $inout_type=2) }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-cube-alt"></i>
         <div data-i18n="Basic">Kirim</div>
       </a>
     </li>
-	<?php 
-      $active = "";
-      if (Request::segment(1) == 'outs')
-        $active = "active";
+    <?php 
+        $active = "";
+        if (Request::segment(1) == 'outs')
+          $active = "active";
 
     ?>
-	<li class="menu-item {{ $active }}">
+    <li class="menu-item {{ $active }}">
       <a href="{{ route('outs', $inout_type=5) }}" class="menu-link">
         <i class="menu-icon tf-icons bx bx-collection"></i>
         <div data-i18n="Basic">Chiqim</div>
       </a>
     </li>
+    <?php 
+        $active = "";
+        $urls = array('cashier-workers', 'cashier-worker-salaries', 'cashier-show-stock-details');
+        if (in_array(Request::segment(1), $urls))
+          $active = "active";
+
+    ?>
+    <li class="menu-item {{ $active }}">
+      <a href="{{ route('cashier-workers') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-group"></i>
+        <div data-i18n="Basic">Xodimlar</div>
+      </a>
+    </li>
+    <?php 
+        $active = "";
+        $urls = array('cashier-customers', 'cashier-customer-shoppings');
+        if (in_array(Request::segment(1), $urls))
+          $active = "active";
+
+    ?>
+    <li class="menu-item {{ $active }}">
+      <a href="{{ route('cashier-customer') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-shopping-bag"></i>
+        <div data-i18n="Basic">Buyurtmachilar</div>
+      </a>
+    </li>
   </ul>
 </aside>
-<!-- / Menu -->

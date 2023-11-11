@@ -17,9 +17,6 @@ return new class extends Migration
             $table->id();
             $table->integer('category_id');
             $table->string('name');
-            $table->integer('purchase_price');
-            $table->integer('dealer_price');
-            $table->integer('retail_price');
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent();
         });

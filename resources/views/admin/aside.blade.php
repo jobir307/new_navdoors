@@ -58,7 +58,7 @@
           </g>
         </svg>
       </span>
-      <span class="app-brand-text demo menu-text fw-bolder ms-2">Navdoors</span>
+      <span class="app-brand-text demo menu-text fw-bolder ms-2">Muhtasham</span>
     </a>
 
     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
@@ -92,7 +92,7 @@
       </a>
     </li>
     <?php 
-      $active_classes = ["depths", "layers", "doortypes", "framogatypes", "ornamenttypes", "jambs", "transoms", "framogafigures", "locktypes", "loops", "glasses", "glass-types", "glass-figures"];
+      $active_classes = ["depths", "layers", "doortypes", "framogatypes", "ornamenttypes", "jambs", "transoms", "framogafigures", "locktypes", "loops", "glasses", "glass-types", "glass-figures", "crowns", "cubes", "boots", "ccbjs", "nsjambs"];
       $active = "";
       $open = "";
       if (in_array(Request::segment(1), $active_classes)){
@@ -108,7 +108,7 @@
       </a>
       <ul class="menu-sub">
       <?php 
-        $active_classes = ["depths", "layers", "doortypes", "framogatypes", "ornamenttypes", "jambs", "transoms", "framogafigures", "locktypes", "loops"];
+        $active_classes = ["depths", "layers", "doortypes", "framogatypes", "ornamenttypes", "jambs", "transoms", "framogafigures", "locktypes", "loops", "crowns", "cubes", "boots", "ccbjs", "nsjambs"];
         $active = "";
         $open = "";
         if (in_array(Request::segment(1), $active_classes)){
@@ -184,6 +184,16 @@
             </li>
             <?php
               $sub_active = "";
+              if (Request::segment(1) == "nsjambs")
+                $sub_active = "active";
+            ?>
+            <li class="menu-item {{ $sub_active }}">
+              <a href="{{ route('nsjambs.index') }}" class="menu-link">
+                <div data-i18n="Collapse">NS nalichniklar</div>
+              </a>
+            </li>
+            <?php
+              $sub_active = "";
               if (Request::segment(1) == "transoms")
                 $sub_active = "active";
             ?>
@@ -220,6 +230,46 @@
             <li class="menu-item {{ $sub_active }}">
               <a href="{{ route('loops.index') }}" class="menu-link">
                 <div data-i18n="Badges">Chaspak</div>
+              </a>
+            </li>
+            <?php
+              $sub_active = "";
+              if (Request::segment(1) == "crowns")
+                $sub_active = "active";
+            ?>
+            <li class="menu-item {{ $sub_active }}">
+              <a href="{{ route('crowns.index') }}" class="menu-link">
+                <div data-i18n="Collapse">Korona</div>
+              </a>
+            </li>
+            <?php
+              $sub_active = "";
+              if (Request::segment(1) == "cubes")
+                $sub_active = "active";
+            ?>
+            <li class="menu-item {{ $sub_active }}">
+              <a href="{{ route('cubes.index') }}" class="menu-link">
+                <div data-i18n="Collapse">Kubik</div>
+              </a>
+            </li>
+            <?php
+              $sub_active = "";
+              if (Request::segment(1) == "boots")
+                $sub_active = "active";
+            ?>
+            <li class="menu-item {{ $sub_active }}">
+              <a href="{{ route('boots.index') }}" class="menu-link">
+                <div data-i18n="Collapse">Sapog</div>
+              </a>
+            </li>
+            <?php
+              $sub_active = "";
+              if (Request::segment(1) == "ccbjs")
+                $sub_active = "active";
+            ?>
+            <li class="menu-item {{ $sub_active }}">
+              <a href="{{ route('ccbjs.index') }}" class="menu-link">
+                <div data-i18n="Collapse">NKKS</div>
               </a>
             </li>
           </ul>
@@ -307,6 +357,17 @@
         <div data-i18n="solid">Xodimlar</div>
       </a>
     </li>
+    <?php 
+      $active = "";
+      if (Request::segment(1) == 'warehouses')
+        $active = "active";
+    ?>
+    <li class="menu-item {{ $active }}">
+      <a href="{{ route('warehouses.index') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-group"></i>
+        <div data-i18n="solid">Skladlar</div>
+      </a>
+    </li>
     <?php
       $active_classes = ["categories", "products"];
       $active = "";
@@ -329,7 +390,7 @@
         ?>
         <li class="menu-item {{ $sub_active }}">
           <a href="{{ route('products.index') }}" class="menu-link">
-            <div data-i18n="Alerts">Hammasi</div>
+            <div data-i18n="Alerts">Mahsulotlar</div>
           </a>
         </li>
         <?php
@@ -340,6 +401,44 @@
         <li class="menu-item {{ $sub_active }}">
           <a href="{{ route('categories.index') }}" class="menu-link">
             <div data-i18n="Accordion">Kategoriyalar</div>
+          </a>
+        </li>
+      </ul>
+    </li>
+
+    <?php
+      $active_classes = ["jamb-names", "transom-names"];
+      $active = "";
+      $open = "";
+      if (in_array(Request::segment(1), $active_classes)){
+        $active = "active";
+        $open = "open";
+      }
+    ?>
+    <li class="menu-item {{ $active }} {{ $open }}">
+      <a href="javascript:void(0)" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-windows"></i>
+        <div data-i18n="solid">Detallar</div>
+      </a>
+      <ul class="menu-sub">
+        <?php
+          $sub_active = "";
+          if (Request::segment(1) == "jamb-names")
+            $sub_active = "active";
+        ?>
+        <li class="menu-item {{ $sub_active }}">
+          <a href="{{ route('jamb-names.index') }}" class="menu-link">
+            <div data-i18n="Alerts">Nalichniklar</div>
+          </a>
+        </li>
+        <?php
+          $sub_active = "";
+          if (Request::segment(1) == "transom-names")
+            $sub_active = "active";
+        ?>
+        <li class="menu-item {{ $sub_active }}">
+          <a href="{{ route('transom-names.index') }}" class="menu-link">
+            <div data-i18n="Accordion">Doborlar</div>
           </a>
         </li>
       </ul>

@@ -16,12 +16,14 @@ class User extends Authenticatable
         'password',
         '_password',
         'role_id',
+        'dealer_id',
     ];
 
     protected $hidden = [
         'password', 
         '_password',
-        'role_id'
+        'role_id',
+        'dealer_id',
     ];
 
     public function isAdmin() // Admin
@@ -32,7 +34,7 @@ class User extends Authenticatable
             return false;
     }
 
-    public function isZavSklad() // Omborxona mudiri
+    public function isWarehouseManager() // Omborxona mudiri
     {
         if($this->role_id === 2)
             return true; 
@@ -78,6 +80,14 @@ class User extends Authenticatable
             return true; 
         else 
             return false;   
+    }
+
+    public function isDealer() // Diler
+    {
+        if($this->role_id === 8)
+            return true; 
+        else 
+            return false;
     }
 
     public function role()

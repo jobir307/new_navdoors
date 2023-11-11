@@ -16,52 +16,54 @@
 @section('content')
   <div class="container-fluid flex-grow-1 container-p-y">
     <div class="row">
-      <div class="col-md-3">
-        <h5 class="text-primary">Haydovchilar ro'yxati</h5>
-      </div>
-      <div class="col-md-9">
-        <button class="btn btn-primary add_btn" style="float: right;" type="button">Yaratish</button>
+      <div class="col-md-12">
+        <button class="btn btn-primary add_btn float-end">Yaratish</button>
       </div>
     </div>
     <div class="row mt-3">
       <div class="col-md-12">
-        <div class="table-responsive text-nowrap">
-          <table class="table table-bordered table-hover" id="drivers_table" style="width:100%">
-            <thead>
-              <tr>
-                <th class="text-center" style="width: 20px;">T/r</th>
-                <th class="text-center">FIO</th>
-                <th class="text-center">Telefon raqami</th>
-                <th class="text-center">Modeli</th>
-                <th class="text-center" style="width: 130px;">Davlat raqami</th>
-                <th class="text-center">Turi</th>
-                <th style="min-width: 130px; width: 130px;"></th>
-              </tr>
-              <tr>
-                <td></td>
-                <td><input class="form-control form-control-sm" type="text" placeholder="FIO"></td>
-                <td><input class="form-control form-control-sm" type="text" placeholder="Telefon raqami"></td>
-                <td></td>
-                <td><input class="form-control form-control-sm" type="text" placeholder="Davlat raqami"></td>
-                <td></td>
-                <td></td>
-              </tr>
-            </thead>
-            <tbody>
-              <?php $auto_types = array('carrier' => 'Kuryer', 'company' => 'Korxona'); ?>
-              @foreach($drivers as $key => $value)
-                <tr>
-                  <td class="text-center">{{ $key + 1 }}</td>
-                  <th class="text-center">{{ $value->driver }}</th>
-                  <th class="text-center">{{ $value->phone_number }}</th>
-                  <td>{{ $value->car_model }}</td>
-                  <td>{{ $value->gov_number }}</td>
-                  <td>{{ $auto_types[$value->type] }}</td>
-                  <td class="text-sm-end"></td>
-                </tr>
-              @endforeach
-            </tbody>
-          </table>
+        <div class="card">
+          <div class="card-body">
+            <h5 class="text-primary">Haydovchilar ro'yxati</h5>
+            <div class="table-responsive text-nowrap">
+              <table class="table table-bordered table-hover" id="drivers_table" style="width:100%">
+                <thead>
+                  <tr>
+                    <th class="text-center" style="width: 20px;">T/r</th>
+                    <th class="text-center">FIO</th>
+                    <th class="text-center">Telefon raqami</th>
+                    <th class="text-center">Modeli</th>
+                    <th class="text-center" style="width: 130px;">Davlat raqami</th>
+                    <th class="text-center">Turi</th>
+                    <th style="min-width: 130px; width: 130px;"></th>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td><input class="form-control form-control-sm" type="text" placeholder="FIO"></td>
+                    <td><input class="form-control form-control-sm" type="text" placeholder="Telefon raqami"></td>
+                    <td></td>
+                    <td><input class="form-control form-control-sm" type="text" placeholder="Davlat raqami"></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php $auto_types = array('carrier' => 'Kuryer', 'company' => 'Korxona'); ?>
+                  @foreach($drivers as $key => $value)
+                    <tr>
+                      <td class="text-center">{{ $key + 1 }}</td>
+                      <td>{{ $value->driver }}</td>
+                      <td>{{ $value->phone_number }}</td>
+                      <td>{{ $value->car_model }}</td>
+                      <td>{{ $value->gov_number }}</td>
+                      <td>{{ $auto_types[$value->type] }}</td>
+                      <td class="text-sm-end"></td>
+                    </tr>
+                  @endforeach
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -158,5 +160,3 @@
     });
   </script>
 @endsection
-
-

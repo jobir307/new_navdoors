@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('transom_results', function (Blueprint $table) {
             $table->id();
             $table->integer('order_id');
+            $table->integer('transom_id');
             $table->string('transom_color');
             $table->string('name');
             $table->double('height');

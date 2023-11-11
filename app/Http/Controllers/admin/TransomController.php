@@ -26,12 +26,14 @@ class TransomController extends Controller
                                        a.installation_price
                                 FROM transoms a, doortypes b 
                                 WHERE a.doortype_id=b.id ');
-        
+
+        $transomnames = DB::select('SELECT id, name FROM transom_names ORDER BY name');
+
         $jobs = DB::table('jobs')->get(['id', 'name'])->toArray();
 
         $doortypes = DB::select('SELECT id, name FROM doortypes ORDER BY name');
 
-        return view('admin.transom.index', compact('transoms', 'doortypes', 'jobs'));
+        return view('admin.transom.index', compact('transoms', 'doortypes', 'jobs', 'transomnames'));
     }
 
     /**
@@ -58,14 +60,18 @@ class TransomController extends Controller
             $jobs = implode(",", $request->jobs);
         }
 
-        Transom::create([
-            'doortype_id'        => $request->doortype_id,
-            'name'               => $request->name,
-            'dealer_price'       => $request->dealer_price,
-            'retail_price'       => $request->retail_price,
-            'installation_price' => $request->installation_price,
-            'jobs'               => $jobs
-        ]);
+        $check = DB::select('SELECT * FROM transoms WHERE doortype_id=? AND name=?', [$request->doortype_id, $request->name]);
+        
+        if (empty($check)) {
+            Transom::create([
+                'doortype_id'        => $request->doortype_id,
+                'name'               => $request->name,
+                'dealer_price'       => $request->dealer_price,
+                'retail_price'       => $request->retail_price,
+                'installation_price' => $request->installation_price,
+                'jobs'               => $jobs
+            ]);
+        }
 
         return redirect()->route('transoms.index');
     }
@@ -94,8 +100,10 @@ class TransomController extends Controller
         $transom_jobs = explode(",", $transom->jobs);
 
         $jobs = DB::table('jobs')->get(['id', 'name'])->toArray();
+
+        $transomnames = DB::select('SELECT id, name FROM transom_names ORDER BY name');
         
-        return view('admin.transom.index', compact('transom', 'doortypes', 'transom_jobs', 'jobs'));
+        return view('admin.transom.index', compact('transom', 'doortypes', 'transom_jobs', 'jobs', 'transomnames'));
     }
 
     /**

@@ -1,7 +1,7 @@
 @extends('layouts.manager')
 @section('content')
   <div class="container-fluid flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><a href="{{ route('orders') }}" class="fw-light">Shartnomalar / </a><span class="text-muted fw-light">Shartnoma ma'lumotlarini o'zgartirish</h4>
+    <h4 class="fw-bold py-3 mb-4"><a href="{{ route('orders') }}" class="fw-light">Shartnomalar / </a><span class="fw-light">Shartnoma ma'lumotlarini o'zgartirish(nalichnik va dobor)</h4>
     <div class="row">
       <div class="col-md-12">
         <div class="card mb-4">
@@ -10,7 +10,8 @@
             @csrf
             <div class="card-body">
               <div class="row">
-                <div class="mb-3 col-md-1 mt-2">
+                @if (Auth::user()->role_id != 8)
+                  <div class="mb-3 col-md-1 mt-2">
                     @if ($order->customer_type == "Diler")
                         <div class="form-check mt-3">
                             <input
@@ -56,32 +57,48 @@
                             <label class="form-check-label" for="dealerRadio"> Diler </label>
                         </div>
                     @endif
-                </div>
+                  </div>
+                @endif
                 @if ($order->customer_type == "Diler")
-                  <div class="mb-3 col-md-2 dealer_div">
-                    <label for="diler" class="form-label">Diler</label><br>
-                    <select class="form-control js-example-basic-single" id="diler" name="dealer" style="width: 100%;">
-                      @foreach($dealers as $key => $value)
-                        @if($order->customer_id == $value->id)
-                          <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
-                        @else
-                          <option value="{{ $value->id }}">{{ $value->name }}</option>
-                        @endif
-                      @endforeach
-                    </select>
-                  </div>
-                  <div class="mb-3 col-md-2 customer_div" style="display: none;">
-                    <label for="diler" class="form-label">Xaridor</label>
-                    <select class="form-control js-example-basic-single" name="customer" style="width: 100%;">
-                      @foreach($customers as $key => $value)
-                        @if($order->customer_id == $value->id)
-                          <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
-                        @else
-                          <option value="{{ $value->id }}">{{ $value->name }}</option>
-                        @endif
-                      @endforeach
-                    </select>
-                  </div>
+                  @if (Auth::user()->role_id == 8) 
+                    <div class="mb-3 col-md-3 dealer_div">
+                      <label for="diler" class="form-label">Diler</label><br>
+                      <select class="form-control js-example-basic-single" id="diler" name="dealer" style="width:100%;" disabled>
+                        @foreach($dealers as $key => $value)
+                          @if($order->customer_id == $value->id)
+                            <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                          @else
+                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                          @endif
+                        @endforeach
+                      </select>
+                    </div>
+                  @else
+                    <div class="mb-3 col-md-2 dealer_div">
+                      <label for="diler" class="form-label">Diler</label><br>
+                      <select class="form-control js-example-basic-single" id="diler" name="dealer" style="width: 100%;">
+                        @foreach($dealers as $key => $value)
+                          @if($order->customer_id == $value->id)
+                            <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                          @else
+                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                          @endif
+                        @endforeach
+                      </select>
+                    </div>
+                    <div class="mb-3 col-md-2 customer_div" style="display: none;">
+                      <label for="diler" class="form-label">Xaridor</label>
+                      <select class="form-control js-example-basic-single" name="customer" style="width: 100%;">
+                        @foreach($customers as $key => $value)
+                          @if($order->customer_id == $value->id)
+                            <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                          @else
+                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                          @endif
+                        @endforeach
+                      </select>
+                    </div>
+                  @endif
                 @else
                   <div class="mb-3 col-md-2 dealer_div" style="display: none;">
                     <label for="diler" class="form-label">Diler</label><br>
@@ -173,10 +190,10 @@
                                 <select class="form-select" name="jamb_id[]" id="jamb">
                                     <option value=""></option>
                                     @foreach($jambs as $key => $value)
-                                        @if ($jamb_results[0]->name == $value->name)
-                                            <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                                        @if ($jamb_results[0]->name == $value->name . '(' . $value->height . 'x' . $value->width . ')')
+                                            <option value="{{ $value->id }}" selected>{{ $value->name }}({{ $value->height }}x{{ $value->width }})</option>
                                         @else
-                                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                            <option value="{{ $value->id }}">{{ $value->name }}({{ $value->height }}x{{ $value->width }})</option>
                                         @endif
                                     @endforeach
                                 </select>
@@ -192,10 +209,10 @@
                                     <select class="form-select" name="jamb_id[]" id="jamb">
                                         <option value=""></option>
                                         @foreach($jambs as $key => $value)
-                                            @if ($jamb_results[$i]->name == $value->name)
-                                                <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                                            @if ($jamb_results[$i]->name == $value->name . '(' . $value->height . 'x' . $value->width . ')')
+                                              <option value="{{ $value->id }}" selected>{{ $value->name }}({{ $value->height }}x{{ $value->width }})</option>
                                             @else
-                                                <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                              <option value="{{ $value->id }}">{{ $value->name }}({{ $value->height }}x{{ $value->width }})</option>
                                             @endif
                                         @endforeach
                                     </select>
@@ -213,10 +230,10 @@
                                 <select class="form-select" name="transom_id[]" id="transom">
                                     <option value=""></option>
                                     @foreach($transoms as $key => $value)
-                                        @if ($transom_results[0]->name == $value->name)
-                                            <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                                        @if ($transom_results[0]->transom_id == $value->id)
+                                            <option value="{{ $value->id }}" selected>{{ $value->transom_name }}({{ $value->doortype_name }})</option>
                                         @else
-                                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                            <option value="{{ $value->id }}">{{ $value->transom_name }}({{ $value->doortype_name }})</option>
                                         @endif
                                     @endforeach
                                 </select>
@@ -244,10 +261,10 @@
                                     <select class="form-select" name="transom_id[]">
                                         <option value=""></option>
                                         @foreach($transoms as $key => $value)
-                                            @if ($transom_results[$i]->name == $value->name)
-                                                <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                                            @if ($transom_results[$i]->transom_id == $value->id)
+                                                <option value="{{ $value->id }}" selected>{{ $value->transom_name }}({{ $value->doortype_name }})</option>
                                             @else
-                                                <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                                <option value="{{ $value->id }}">{{ $value->transom_name }}({{ $value->doortype_name }})</option>
                                             @endif
                                         @endforeach
                                     </select>
@@ -270,9 +287,14 @@
                 </div>
                 
             </div>
-            <div class="card-footer float-end">
-              <div class="mt-2">
-                <button type="submit" class="btn btn-primary me-2">Saqlash</button>
+            <div class="card-footer">
+              <div class="row">
+                <div class="col-md-10">
+                  <textarea name="comments" class="form-control" rows="10" placeholder="Izoh qoldiring...">{{ $order->comments }}</textarea>
+                </div>
+                <div class="col-md-2">
+                  <button type="submit" class="btn btn-primary me-2 float-end">Saqlash</button>
+                </div>  
               </div>
             </div>
           </form>
@@ -284,7 +306,7 @@
                 <select class="form-select" name="transom_id[]">
                     <option value=""></option>
                     @foreach($transoms as $key => $value)
-                        <option value="{{ $value->id }}">{{ $value->name }}</option>
+                        <option value="{{ $value->id }}">{{ $value->transom_name }}({{ $value->doortype_name }})</option>
                     @endforeach
                 </select>
             </div>
@@ -308,7 +330,7 @@
                 <select class="form-select" name="jamb_id[]" id="depth">
                     <option value=""></option>
                     @foreach($jambs as $key => $value)
-                        <option value="{{ $value->id }}">{{ $value->name }}</option>
+                        <option value="{{ $value->id }}">{{ $value->name }}({{ $value->height }}x{{ $value->width }})</option>
                     @endforeach
                 </select>
             </div>

@@ -6,7 +6,7 @@
 </style>
 @section('content')
   <div class="container-fluid flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><a href="{{ route('orders') }}" class="fw-light">Shartnomalar / </a><span class="text-muted fw-light">Shartnoma ma'lumotlarini o'zgartirish</h4>
+    <h4 class="fw-bold py-3 mb-4"><a href="{{ route('orders') }}" class="fw-light">Shartnomalar / </a><span class="fw-light">Shartnoma ma'lumotlarini o'zgartirish(eshik)</h4>
     <div class="row">
       <div class="col-md-12">
         <div class="card mb-4">
@@ -27,78 +27,95 @@
                     @endforeach
                   </select>
                 </div>
-                <div class="mb-3 col-md-1 mt-2">
-                  @if ($order->customer_type == "Diler")
-                    <div class="form-check mt-3">
-                      <input
-                        name="customer_radio"
-                        class="form-check-input customerRadio"
-                        type="radio"
-                        value="customer"
-                        id="customerRadio"
-                      />
-                      <label class="form-check-label" for="customerRadio"> Xaridor </label>
-                    </div>
-                    <div class="form-check">
-                      <input
-                        name="customer_radio"
-                        class="form-check-input customerRadio"
-                        type="radio"
-                        value="dealer"
-                        id="dealerRadio"
-                        checked
-                      />
-                      <label class="form-check-label" for="dealerRadio"> Diler </label>
+                @if (Auth::user()->role_id != 8)
+                  <div class="mb-3 col-md-1 mt-2">
+                    @if ($order->customer_type == "Diler")
+                      <div class="form-check mt-3">
+                        <input
+                          name="customer_radio"
+                          class="form-check-input customerRadio"
+                          type="radio"
+                          value="customer"
+                          id="customerRadio"
+                        />
+                        <label class="form-check-label" for="customerRadio"> Xaridor </label>
+                      </div>
+                      <div class="form-check">
+                        <input
+                          name="customer_radio"
+                          class="form-check-input customerRadio"
+                          type="radio"
+                          value="dealer"
+                          id="dealerRadio"
+                          checked
+                        />
+                        <label class="form-check-label" for="dealerRadio"> Diler </label>
+                      </div>
+                    @else
+                      <div class="form-check mt-3">
+                        <input
+                          name="customer_radio"
+                          class="form-check-input customerRadio"
+                          type="radio"
+                          value="customer"
+                          id="customerRadio"
+                          checked
+                        />
+                        <label class="form-check-label" for="customerRadio"> Xaridor </label>
+                      </div>
+                      <div class="form-check">
+                        <input
+                          name="customer_radio"
+                          class="form-check-input customerRadio"
+                          type="radio"
+                          value="dealer"
+                          id="dealerRadio"
+                        />
+                        <label class="form-check-label" for="dealerRadio"> Diler </label>
+                      </div>
+                    @endif
+                  </div>
+                @endif
+                @if ($order->customer_type == "Diler")
+                  @if (Auth::user()->role_id == 8)
+                    <div class="mb-3 col-md-4 dealer_div">
+                      <label for="diler" class="form-label">Diler</label><br>
+                      <select class="form-control js-example-basic-single" id="diler" name="dealer" style="width: 100%;" disabled>
+                        @foreach($dealers as $key => $value)
+                          @if($order->customer_id == $value->id)
+                            <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                          @else
+                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                          @endif
+                        @endforeach
+                      </select>
                     </div>
                   @else
-                    <div class="form-check mt-3">
-                      <input
-                        name="customer_radio"
-                        class="form-check-input customerRadio"
-                        type="radio"
-                        value="customer"
-                        id="customerRadio"
-                        checked
-                      />
-                      <label class="form-check-label" for="customerRadio"> Xaridor </label>
+                    <div class="mb-3 col-md-3 dealer_div">
+                      <label for="diler" class="form-label">Diler</label><br>
+                      <select class="form-control js-example-basic-single" id="diler" name="dealer" style="width:100%;">
+                        @foreach($dealers as $key => $value)
+                          @if($order->customer_id == $value->id)
+                            <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                          @else
+                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                          @endif
+                        @endforeach
+                      </select>
                     </div>
-                    <div class="form-check">
-                      <input
-                        name="customer_radio"
-                        class="form-check-input customerRadio"
-                        type="radio"
-                        value="dealer"
-                        id="dealerRadio"
-                      />
-                      <label class="form-check-label" for="dealerRadio"> Diler </label>
+                    <div class="mb-3 col-md-3 customer_div" style="display: none;">
+                      <label for="diler" class="form-label">Xaridor</label>
+                      <select class="form-control js-example-basic-single" name="customer" style="width: 100%;">
+                        @foreach($customers as $key => $value)
+                          @if($order->customer_id == $value->id)
+                            <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                          @else
+                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                          @endif
+                        @endforeach
+                      </select>
                     </div>
                   @endif
-                </div>
-                @if ($order->customer_type == "Diler")
-                  <div class="mb-3 col-md-3 dealer_div">
-                    <label for="diler" class="form-label">Diler</label><br>
-                    <select class="form-control js-example-basic-single" id="diler" name="dealer" style="width: 100%;">
-                      @foreach($dealers as $key => $value)
-                        @if($order->customer_id == $value->id)
-                          <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
-                        @else
-                          <option value="{{ $value->id }}">{{ $value->name }}</option>
-                        @endif
-                      @endforeach
-                    </select>
-                  </div>
-                  <div class="mb-3 col-md-3 customer_div" style="display: none;">
-                    <label for="diler" class="form-label">Xaridor</label>
-                    <select class="form-control js-example-basic-single" name="customer" style="width: 100%;">
-                      @foreach($customers as $key => $value)
-                        @if($order->customer_id == $value->id)
-                          <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
-                        @else
-                          <option value="{{ $value->id }}">{{ $value->name }}</option>
-                        @endif
-                      @endforeach
-                    </select>
-                  </div>
                 @else
                   <div class="mb-3 col-md-3 dealer_div" style="display: none;">
                     <label for="diler" class="form-label">Diler</label><br>
@@ -144,10 +161,19 @@
                   <input class="form-control" type="date" name="deadline" id="deadline" autocomplete="off" value="{{ $order->deadline }}">
                 </div>
                 <div class="mb-3 col-md-2">
-                  <div class="form-check">
-                    <label for="with_installation" class="form-check-label">Ustanovka</label>
-                    <input class="form-check-input installation_check" type="checkbox" name="with_installation" id="with_installation" autocomplete="off" {{ $order->with_installation ? "checked" : "" }} />
-                  </div>
+                  @if($order->with_installation == 1) 
+                    <div class="form-check">
+                        <label for="with_installation" class="form-check-label">Ustanovka</label>
+                        <input class="form-check-input installation_check" type="checkbox" name="with_installation" id="with_installation" checked>
+                    </div>
+                    <input type="text" class="form-control installation_price mt-2" name="door_installation_price" style="display: block;" placeholder="Ustanovka narxi" autocomplete="off" value="{{ $order->installation_price / $layer_sum }}">
+                  @else
+                    <div class="form-check">
+                      <label for="with_installation" class="form-check-label">Ustanovka</label>
+                      <input class="form-check-input installation_check" type="checkbox" name="with_installation" id="with_installation">
+                    </div>
+                    <input type="text" class="form-control installation_price mt-2" name="door_installation_price" style="display: none;" placeholder="Ustanovka narxi" autocomplete="off">
+                  @endif
                 </div>
                 <div class="mb-3 col-md-2">
                   <div class="form-check">
@@ -163,27 +189,186 @@
                   <button type="button" class="btn btn-sm btn-outline-warning mt-4 door_parameters_minus" style="float: right; margin-right: 8px;"><i class="bx bx-minus"></i></button>
                 </div>
               </div>
-                <div class="row mt-4 door_parameters_div" data-index="0">
+              <div class="row mt-4 door_parameters_div" data-index="0">
+                <div class="mb-3 col-lg-1" style="max-width: 121px;">
+                  <label for="height" class="form-label">Bo'yi</label>
+                  <input class="form-control" type="text" name="height[]" id="height" autocomplete="off" value="{{ $door_parameters[0]['height'] }}">
+                </div>
+                <div class="mb-3 col-md-1" style="max-width: 121px;">
+                  <label for="width" class="form-label">Eni</label>
+                  <input class="form-control" type="text" name="width[]" id="width" autocomplete="off" value="{{ $door_parameters[0]['width'] }}">
+                </div>
+                <div class="mb-3 col-md-1" style="max-width: 121px;">
+                  <label for="count" class="form-label">Soni</label>
+                  <input class="form-control" type="number" name="count[]" id="count" autocomplete="off" value="{{ $door_parameters[0]['count'] }}">
+                </div>
+                <div class="mb-3 col-md-1" style="max-width: 115px;">
+                  <label for="l_p" class="form-label">L-P</label>
+                  <?php 
+                    $lps = ['' => '', 'l' => 'L', 'p' => 'P', 'l-p' => 'L-P'];
+                  ?>
+                  <select class="form-select" id="l_p" name="l_p[]">
+                    @foreach ($lps as $key => $value)
+                      @if ($door_parameters[0]['l_p'] == $key)
+                        <option value="{{ $key }}" selected>{{ $value }}</option>
+                      @else
+                        <option value="{{ $key }}">{{ $value }}</option>
+                      @endif
+                    @endforeach
+                  </select>
+                </div>
+                <div class="mb-3 col-md-1" style="max-width: 121px;">
+                  <label for="wall_thickness" class="form-label">Devor qalinligi</label>
+                  <input class="form-control" type="text" name="wall_thickness[]" id="wall_thickness" autocomplete="off" value="{{ $door_parameters[0]['wall_thickness'] }}">
+                </div>
+                <div class="mb-3 col-md-1" style="max-width: 123px;">
+                  <label for="box_size" class="form-label">Karobka o'lchami</label>
+                  <input class="form-control" type="text" name="box_size[]" id="box_size" autocomplete="off" value="{{ $door_parameters[0]['box_size'] }}">
+                </div>
+                <div class="mb-3 col-md-1" style="max-width: 123px;">
+                  <label for="depth" class="form-label">Karobka qalinligi</label>
+                  <select class="form-select" name="depth_id[]" id="depth">
+                    @foreach($depths as $key => $value)
+                      @if($door_parameters[0]['depth'] == $value->name)
+                        <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                      @else
+                        <option value="{{ $value->id }}">{{ $value->name }}</option>
+                      @endif
+                    @endforeach
+                  </select>
+                </div>
+                <div class="mb-3 col-md-1" style="max-width: 121px;">
+                  <label for="transom" class="form-label">Dobor</label>
+                  <select class="form-select" id="transom" name="transom_side[]">
+                    <option></option>
+                    <?php $transoms = [1, 2, '1 oldidan']; ?>
+                    @foreach($transoms as $value)
+                      @if($door_parameters[0]['transom_side'] == $value)
+                        <option value="{{ $value }}" selected>{{ $value }}</option>
+                      @else
+                        <option value="{{ $value }}">{{ $value }}</option>
+                      @endif
+                    @endforeach
+                  </select>
+                </div>
+                <div class="mb-3 col-md-1" style="max-width: 121px;">
+                  <label for="layer" class="form-label">Tabaqaligi</label>
+                  <select class="form-select" id="layer" name="layer_id[]">
+                    @foreach($layers as $key => $value)
+                      @if($door_parameters[0]['layer'] == $value->name)
+                        <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                      @else
+                        <option value="{{ $value->id }}">{{ $value->name }}</option>
+                      @endif
+                    @endforeach
+                  </select>
+                </div>
+                <div class="mb-3 col-md-1" style="max-width: 121px;">
+                  <label for="doorstep" class="form-label">Porog</label>
+                  <?php 
+                    $doorsteps = ['bez' => 'Bez', 'parogli' => 'Parogli'];
+                  ?>
+                  <select class="form-select" id="doorstep" name="doorstep[]">
+
+                    @foreach($doorsteps as $key => $value)
+                      @if ($key == $door_parameters[0]['doorstep'])
+                        <option value="{{ $key }}" selected>{{ $value }}</option>
+                      @else
+                        <option value="{{ $key }}">{{ $value }}</option>
+                      @endif
+                    @endforeach
+                  </select>
+                </div>
+                <div class="mb-3 col-md-1" style="max-width: 121px;">
+                  <label for="ornament" class="form-label">Naqsh shakli</label>
+                  <select class="form-select" id="ornament" name="ornament_id[]">
+                    <option value=""></option>
+                    @foreach($ornamenttypes as $key => $value)
+                      @if ($value->name == $door_parameters[0]['ornamenttype'])
+                        <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                      @else
+                        <option value="{{ $value->id }}">{{ $value->name }}</option>
+                      @endif
+                    @endforeach
+                  </select>
+                  <input type="hidden" name="hidden_glasstype_id[]" class="form-control">
+                  <input type="hidden" name="hidden_glassfigure_id[]" class="form-control">
+                  <input type="hidden" name="hidden_glass_count[]" class="form-control">
+                </div>
+                <div class="mb-3 col-md-1" style="max-width: 121px;">
+                  <label for="locktype" class="form-label">Qulf turi</label>
+                  <select class="form-select" id="locktype" name="locktype_id[]">
+                    <option value=""></option>
+                    @foreach($locktypes as $key => $value)
+                      @if ($value->name == $door_parameters[0]['locktype'])
+                        <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                      @else
+                        <option value="{{ $value->id }}">{{ $value->name }}</option>
+                      @endif
+                    @endforeach
+                  </select>
+                </div>
+                <div class="mb-3 col-md-1" style="max-width: 121px;">
+                  <label class="form-label" for="loop">Chaspak</label>
+                  <button
+                    class="btn btn-outline-info chaspak_btn"
+                    type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasChaspak"
+                    aria-controls="offcanvasChaspak"
+                  >
+                    Tanlash
+                  </button>
+                  <input type="hidden" name="hidden_loop_id[]" class="form-control">
+                  <input type="hidden" name="hidden_loop_count[]" class="form-control">
+                </div>
+                <div class="mb-3 col-md-1" style="max-width: 121px;">
+                  <label for="jamb" class="form-label">NKKS</label>
+                  <button
+                    id="loop"
+                    class="btn btn-outline-success jamb_btn"
+                    type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasJamb"
+                    aria-controls="offcanvasJamb"
+                  >
+                    Tanlash
+                  </button>
+                  <input type="hidden" name="hidden_jamb_name[]" class="form-control">
+                  <input type="hidden" name="hidden_jamb_side[]" class="form-control">
+
+                  <input type="hidden" name="hidden_crown_id[]" class="form-control">
+                  <input type="hidden" name="hidden_crown_side[]" class="form-control">
+
+                  <input type="hidden" name="hidden_cube_name[]" class="form-control">
+                  <input type="hidden" name="hidden_cube_side[]" class="form-control">
+                </div>
+                <div class="mb-3 col-md-1" style="max-width: 125px;">
+                  <label class="form-label" for="framoga_btn">Framoga</label>
+                  <button class="btn btn-outline-secondary" type="button" id="framoga_btn">Tanlash</button>
+                  <input type="hidden" name="hidden_framoga_type[]" class="form-control">
+                  <input type="hidden" name="hidden_framoga_figure[]" class="form-control">
+                </div>
+              </div>
+
+              @for($i=1; $i < count($door_parameters); $i++)
+                <div class="row door_parameters_div" data-index="{{ $i }}">
                   <div class="mb-3 col-lg-1" style="max-width: 121px;">
-                    <label for="height" class="form-label">Bo'yi</label>
-                    <input class="form-control" type="text" name="height[]" id="height" autocomplete="off" value="{{ $door_parameters[0]['height'] }}">
+                    <input class="form-control" type="text" name="height[]" id="height" autocomplete="off" value="{{ $door_parameters[$i]['height'] }}">
                   </div>
                   <div class="mb-3 col-md-1" style="max-width: 121px;">
-                    <label for="width" class="form-label">Eni</label>
-                    <input class="form-control" type="text" name="width[]" id="width" autocomplete="off" value="{{ $door_parameters[0]['width'] }}">
+                    <input class="form-control" type="text" name="width[]" id="width" autocomplete="off" value="{{ $door_parameters[$i]['width'] }}">
                   </div>
                   <div class="mb-3 col-md-1" style="max-width: 121px;">
-                    <label for="count" class="form-label">Soni</label>
-                    <input class="form-control" type="number" name="count[]" id="count" autocomplete="off" value="{{ $door_parameters[0]['count'] }}">
+                    <input class="form-control" type="number" name="count[]" id="count" autocomplete="off" value="{{ $door_parameters[$i]['count'] }}">
                   </div>
                   <div class="mb-3 col-md-1" style="max-width: 115px;">
-                    <label for="l_p" class="form-label">L-P</label>
                     <?php 
-                      $lps = ['l' => 'L', 'p' => 'P'];
+                      $lps = ['' => '', 'l' => 'L', 'p' => 'P', 'l-p' => 'L-P'];
                     ?>
                     <select class="form-select" id="l_p" name="l_p[]">
                       @foreach ($lps as $key => $value)
-                        @if ($door_parameters[0]['l_p'] == $key)
+                        @if ($door_parameters[$i]['l_p'] == $key)
                           <option value="{{ $key }}" selected>{{ $value }}</option>
                         @else
                           <option value="{{ $key }}">{{ $value }}</option>
@@ -192,18 +377,15 @@
                     </select>
                   </div>
                   <div class="mb-3 col-md-1" style="max-width: 121px;">
-                    <label for="wall_thickness" class="form-label">Devor qalinligi</label>
-                    <input class="form-control" type="text" name="wall_thickness[]" id="wall_thickness" autocomplete="off" value="{{ $door_parameters[0]['wall_thickness'] }}">
+                    <input class="form-control" type="text" name="wall_thickness[]" id="wall_thickness" autocomplete="off" value="{{ $door_parameters[$i]['wall_thickness'] }}">
                   </div>
                   <div class="mb-3 col-md-1" style="max-width: 123px;">
-                    <label for="box_size" class="form-label">Karobka o'lchami</label>
-                    <input class="form-control" type="text" name="box_size[]" id="box_size" autocomplete="off" value="{{ $door_parameters[0]['box_size'] }}">
+                    <input class="form-control" type="text" name="box_size[]" id="box_size" autocomplete="off" value="{{ $door_parameters[$i]['box_size'] }}">
                   </div>
                   <div class="mb-3 col-md-1" style="max-width: 123px;">
-                    <label for="depth" class="form-label">Karobka qalinligi</label>
                     <select class="form-select" name="depth_id[]" id="depth">
                       @foreach($depths as $key => $value)
-                        @if($door_parameters[0]['depth'] == $value->name)
+                        @if($door_parameters[$i]['depth'] == $value->name)
                           <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
                         @else
                           <option value="{{ $value->id }}">{{ $value->name }}</option>
@@ -212,11 +394,11 @@
                     </select>
                   </div>
                   <div class="mb-3 col-md-1" style="max-width: 121px;">
-                    <label for="transom" class="form-label">Dobor</label>
                     <select class="form-select" id="transom" name="transom_side[]">
-                      <?php $transoms = [1, 2]; ?>
+                      <option></option>
+                      <?php $transoms = [1, 2, '1 oldidan']; ?>
                       @foreach($transoms as $value)
-                        @if($door_parameters[0]['transom_side'] == $value)
+                        @if(isset($door_parameters[$i]['transom_side']) && $door_parameters[$i]['transom_side'] == $value)
                           <option value="{{ $value }}" selected>{{ $value }}</option>
                         @else
                           <option value="{{ $value }}">{{ $value }}</option>
@@ -225,10 +407,9 @@
                     </select>
                   </div>
                   <div class="mb-3 col-md-1" style="max-width: 121px;">
-                    <label for="layer" class="form-label">Tabaqaligi</label>
                     <select class="form-select" id="layer" name="layer_id[]">
                       @foreach($layers as $key => $value)
-                        @if($door_parameters[0]['layer'] == $value->name)
+                        @if($door_parameters[$i]['layer'] == $value->name)
                           <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
                         @else
                           <option value="{{ $value->id }}">{{ $value->name }}</option>
@@ -237,14 +418,13 @@
                     </select>
                   </div>
                   <div class="mb-3 col-md-1" style="max-width: 121px;">
-                    <label for="doorstep" class="form-label">Porog</label>
                     <?php 
                       $doorsteps = ['bez' => 'Bez', 'parogli' => 'Parogli'];
                     ?>
                     <select class="form-select" id="doorstep" name="doorstep[]">
 
                       @foreach($doorsteps as $key => $value)
-                        @if ($key == $door_parameters[0]['doorstep'])
+                        @if ($key == $door_parameters[$i]['doorstep'])
                           <option value="{{ $key }}" selected>{{ $value }}</option>
                         @else
                           <option value="{{ $key }}">{{ $value }}</option>
@@ -253,11 +433,10 @@
                     </select>
                   </div>
                   <div class="mb-3 col-md-1" style="max-width: 121px;">
-                    <label for="ornament" class="form-label">Naqsh shakli</label>
                     <select class="form-select" id="ornament" name="ornament_id[]">
                       <option value=""></option>
                       @foreach($ornamenttypes as $key => $value)
-                        @if ($value->name == $door_parameters[0]['ornamenttype'])
+                        @if ($value->name == $door_parameters[$i]['ornamenttype'])
                           <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
                         @else
                           <option value="{{ $value->id }}">{{ $value->name }}</option>
@@ -269,11 +448,10 @@
                     <input type="hidden" name="hidden_glass_count[]" class="form-control">
                   </div>
                   <div class="mb-3 col-md-1" style="max-width: 121px;">
-                    <label for="locktype" class="form-label">Qulf turi</label>
                     <select class="form-select" id="locktype" name="locktype_id[]">
                       <option value=""></option>
                       @foreach($locktypes as $key => $value)
-                        @if ($value->name == $door_parameters[0]['locktype'])
+                        @if ($value->name == $door_parameters[$i]['locktype'])
                           <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
                         @else
                           <option value="{{ $value->id }}">{{ $value->name }}</option>
@@ -282,7 +460,6 @@
                     </select>
                   </div>
                   <div class="mb-3 col-md-1" style="max-width: 121px;">
-                    <label class="form-label" for="loop">Chaspak</label>
                     <button
                       class="btn btn-outline-info chaspak_btn"
                       type="button"
@@ -296,10 +473,9 @@
                     <input type="hidden" name="hidden_loop_count[]" class="form-control">
                   </div>
                   <div class="mb-3 col-md-1" style="max-width: 121px;">
-                    <label for="jamb" class="form-label">Nalichnik</label>
                     <button
                       id="loop"
-                      class="btn btn-outline-success"
+                      class="btn btn-outline-success jamb_btn"
                       type="button"
                       data-bs-toggle="offcanvas"
                       data-bs-target="#offcanvasJamb"
@@ -307,165 +483,35 @@
                     >
                       Tanlash
                     </button>
-                    <input type="hidden" id="jamb" name="jamb[]" class="form-control" data-bs-toggle="modal" data-bs-target="#modaljamb" placeholder="Nalichnikni tanlang" autocomplete="off">
+                    <input type="hidden" name="hidden_jamb_name[]" class="form-control">
+                    <input type="hidden" name="hidden_jamb_side[]" class="form-control">
+
+                    <input type="hidden" name="hidden_crown_id[]" class="form-control">
+                    <input type="hidden" name="hidden_crown_side[]" class="form-control">
+
+                    <input type="hidden" name="hidden_cube_name[]" class="form-control">
+                    <input type="hidden" name="hidden_cube_side[]" class="form-control">
                   </div>
                   <div class="mb-3 col-md-1" style="max-width: 125px;">
-                    <label class="form-label" for="framoga_btn">Framoga</label>
                     <button class="btn btn-outline-secondary" type="button" id="framoga_btn">Tanlash</button>
                     <input type="hidden" name="hidden_framoga_type[]" class="form-control">
                     <input type="hidden" name="hidden_framoga_figure[]" class="form-control">
                   </div>
                 </div>
-
-                @for($i=1; $i < count($door_parameters); $i++)
-                  <div class="row door_parameters_div" data-index="{{ $i }}">
-                    <div class="mb-3 col-lg-1" style="max-width: 121px;">
-                      <input class="form-control" type="text" name="height[]" id="height" autocomplete="off" value="{{ $door_parameters[$i]['height'] }}">
-                    </div>
-                    <div class="mb-3 col-md-1" style="max-width: 121px;">
-                      <input class="form-control" type="text" name="width[]" id="width" autocomplete="off" value="{{ $door_parameters[$i]['width'] }}">
-                    </div>
-                    <div class="mb-3 col-md-1" style="max-width: 121px;">
-                      <input class="form-control" type="number" name="count[]" id="count" autocomplete="off" value="{{ $door_parameters[$i]['count'] }}">
-                    </div>
-                    <div class="mb-3 col-md-1" style="max-width: 115px;">
-                      <?php 
-                        $lps = ['l' => 'L', 'p' => 'P'];
-                      ?>
-                      <select class="form-select" id="l_p" name="l_p[]">
-                        @foreach ($lps as $key => $value)
-                          @if ($door_parameters[$i]['l_p'] == $key)
-                            <option value="{{ $key }}" selected>{{ $value }}</option>
-                          @else
-                            <option value="{{ $key }}">{{ $value }}</option>
-                          @endif
-                        @endforeach
-                      </select>
-                    </div>
-                    <div class="mb-3 col-md-1" style="max-width: 121px;">
-                      <input class="form-control" type="text" name="wall_thickness[]" id="wall_thickness" autocomplete="off" value="{{ $door_parameters[$i]['wall_thickness'] }}">
-                    </div>
-                    <div class="mb-3 col-md-1" style="max-width: 123px;">
-                      <input class="form-control" type="text" name="box_size[]" id="box_size" autocomplete="off" value="{{ $door_parameters[$i]['box_size'] }}">
-                    </div>
-                    <div class="mb-3 col-md-1" style="max-width: 123px;">
-                      <select class="form-select" name="depth_id[]" id="depth">
-                        @foreach($depths as $key => $value)
-                          @if($door_parameters[$i]['depth'] == $value->name)
-                            <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
-                          @else
-                            <option value="{{ $value->id }}">{{ $value->name }}</option>
-                          @endif
-                        @endforeach
-                      </select>
-                    </div>
-                    <div class="mb-3 col-md-1" style="max-width: 121px;">
-                      <select class="form-select" id="transom" name="transom_side[]">
-                        <?php $transoms = [1, 2]; ?>
-                        @foreach($transoms as $value)
-                          @if(isset($door_parameters[$i]['transom_side']) && $door_parameters[$i]['transom_side'] == $value)
-                            <option value="{{ $value }}" selected>{{ $value }}</option>
-                          @else
-                            <option value="{{ $value }}">{{ $value }}</option>
-                          @endif
-                        @endforeach
-                      </select>
-                    </div>
-                    <div class="mb-3 col-md-1" style="max-width: 121px;">
-                      <select class="form-select" id="layer" name="layer_id[]">
-                        @foreach($layers as $key => $value)
-                          @if($door_parameters[$i]['layer'] == $value->name)
-                            <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
-                          @else
-                            <option value="{{ $value->id }}">{{ $value->name }}</option>
-                          @endif
-                        @endforeach
-                      </select>
-                    </div>
-                    <div class="mb-3 col-md-1" style="max-width: 121px;">
-                      <?php 
-                        $doorsteps = ['bez' => 'Bez', 'parogli' => 'Parogli'];
-                      ?>
-                      <select class="form-select" id="doorstep" name="doorstep[]">
-
-                        @foreach($doorsteps as $key => $value)
-                          @if ($key == $door_parameters[$i]['doorstep'])
-                            <option value="{{ $key }}" selected>{{ $value }}</option>
-                          @else
-                            <option value="{{ $key }}">{{ $value }}</option>
-                          @endif
-                        @endforeach
-                      </select>
-                    </div>
-                    <div class="mb-3 col-md-1" style="max-width: 121px;">
-                      <select class="form-select" id="ornament" name="ornament_id[]">
-                        <option value=""></option>
-                        @foreach($ornamenttypes as $key => $value)
-                          @if ($value->name == $door_parameters[$i]['ornamenttype'])
-                            <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
-                          @else
-                            <option value="{{ $value->id }}">{{ $value->name }}</option>
-                          @endif
-                        @endforeach
-                      </select>
-                      <input type="hidden" name="hidden_glasstype_id[]" class="form-control">
-                      <input type="hidden" name="hidden_glassfigure_id[]" class="form-control">
-                      <input type="hidden" name="hidden_glass_count[]" class="form-control">
-                    </div>
-                    <div class="mb-3 col-md-1" style="max-width: 121px;">
-                      <select class="form-select" id="locktype" name="locktype_id[]">
-                        <option value=""></option>
-                        @foreach($locktypes as $key => $value)
-                          @if ($value->name == $door_parameters[$i]['locktype'])
-                            <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
-                          @else
-                            <option value="{{ $value->id }}">{{ $value->name }}</option>
-                          @endif
-                        @endforeach
-                      </select>
-                    </div>
-                    <div class="mb-3 col-md-1" style="max-width: 121px;">
-                      <button
-                        class="btn btn-outline-info chaspak_btn"
-                        type="button"
-                        data-bs-toggle="offcanvas"
-                        data-bs-target="#offcanvasChaspak"
-                        aria-controls="offcanvasChaspak"
-                      >
-                        Tanlash
-                      </button>
-                      <input type="hidden" name="hidden_loop_id[]" class="form-control">
-                      <input type="hidden" name="hidden_loop_count[]" class="form-control">
-                    </div>
-                    <div class="mb-3 col-md-1" style="max-width: 121px;">
-                      <button
-                        id="loop"
-                        class="btn btn-outline-success jamb_btn"
-                        type="button"
-                        data-bs-toggle="offcanvas"
-                        data-bs-target="#offcanvasJamb"
-                        aria-controls="offcanvasJamb"
-                      >
-                        Tanlash
-                      </button>
-                      <input type="hidden" id="jamb" name="jamb[]" class="form-control" data-bs-toggle="modal" data-bs-target="#modaljamb" placeholder="Nalichnikni tanlang" autocomplete="off">
-                    </div>
-                    <div class="mb-3 col-md-1" style="max-width: 125px;">
-                      <button class="btn btn-outline-secondary" type="button" id="framoga_btn">Tanlash</button>
-                      <input type="hidden" name="hidden_framoga_type[]" class="form-control">
-                      <input type="hidden" name="hidden_framoga_figure[]" class="form-control">
-                    </div>
-                  </div>
-                @endfor
-              </div>
+              @endfor
             </div>
-            <div class="card-footer float-end">
-              <div class="mt-2">
-                <button type="submit" class="btn btn-primary">Saqlash</button>
+          </div>
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-md-10">
+                <textarea name="comments" class="form-control" rows="10" placeholder="Izoh qoldiring...">{{ $order->comments }}</textarea>
               </div>
+              <div class="col-md-2">
+                <button type="submit" class="btn btn-primary me-2 float-end">Saqlash</button>
+              </div>  
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
 
         <!-- Labelsiz eshik parametrlari -->
         <div class="row mt-4 door_parameters_without_labels" style="display:none;">
@@ -501,9 +547,10 @@
           </div>
           <div class="mb-3 col-md-1" style="max-width: 121px;">
             <select class="form-select" id="transom" name="transom_side[]">
-              <option value="0"></option>
+              <option></option>
               <option value="1">1</option>
               <option value="2">2</option>
+              <option value="1 oldidan">1 oldidan</option>
             </select>
           </div>
           <div class="mb-3 col-md-1" style="max-width: 121px;">
@@ -561,7 +608,14 @@
             >
               Tanlash
             </button>
-            <input type="hidden" id="jamb" name="jamb[]" class="form-control" data-bs-toggle="modal" data-bs-target="#modaljamb" placeholder="Nalichnikni tanlang" autocomplete="off">
+            <input type="hidden" name="hidden_jamb_name[]" class="form-control">
+            <input type="hidden" name="hidden_jamb_side[]" class="form-control">
+
+            <input type="hidden" name="hidden_crown_id[]" class="form-control">
+            <input type="hidden" name="hidden_crown_side[]" class="form-control">
+
+            <input type="hidden" name="hidden_cube_name[]" class="form-control">
+            <input type="hidden" name="hidden_cube_side[]" class="form-control">
           </div>
           <div class="mb-3 col-md-1" style="max-width: 121px;">
             <button class="btn btn-outline-secondary" type="button" id="framoga_btn">Tanlash</button>
@@ -673,7 +727,7 @@
           aria-labelledby="offcanvasJambLabel"
         >
           <div class="offcanvas-header">
-            <h5 id="offcanvasJambLabel" class="offcanvas-title">Nalichnik tanlash</h5>
+            <h5 id="offcanvasJambLabel" class="offcanvas-title">NKKS tanlash</h5>
             <button
               type="button"
               class="btn-close text-reset"
@@ -681,31 +735,67 @@
               aria-label="Close"
             ></button>
           </div>
-          <div class="offcanvas-body jamb_content">
-            <div class="row">
-              <div class="col-md-12">
-                <button type="button" class="btn btn-sm btn-outline-success mt-4 jamb_plus" style="float: right;"><i class="bx bx-plus"></i></button>
-                <button type="button" class="btn btn-sm btn-outline-warning mt-4 jamb_minus" style="float: right; margin-right: 8px;"><i class="bx bx-minus"></i></button>
-              </div>
-            </div>
-            <div class="row jamb_div mt-3 mb-3">
-              <div class="col-md-10">
+          <div class="offcanvas-body">
+            <div class="row mt-3 mb-3">
+              <div class="col-md-9">
                 <label class="form-label" for="jamb_type">Nalichnik turi</label>
-                <select class="form-select jamb_id" id="jamb_type" name="jamb_id[]">
-                  <option value=""></option>
+                <select class="form-select jamb_name" id="jamb_type" name="jamb_name[]">
+                  <option></option>
                   @foreach($jambs as $key => $value)
-                    <option value="{{ $value->id }}">{{ $value->name }}</option>
+                    <option value="{{ $value->name }}">{{ $value->name }}</option>
                   @endforeach
                 </select>
               </div>
-              <div class="col-md-2">
-                <label class="form-label" for="jamb_count">Soni</label>
-                <input class="form-control jamb_count" type="text" id="jamb_count" name="jamb_count[]">
+              <div class="col-md-3">
+                <label class="form-label" for="jamb_side">Komplekt</label>
+                <select name="jamb_side[]" id="jamb_side" class="form-select jamb_side">
+                  <option value="0"></option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                </select>
+              </div>
+            </div>
+            <div class="row mt-3 mb-3">
+              <div class="col-md-9">
+                <label class="form-label" for="crown_type">Korona</label>
+                <select class="form-select crown_id" id="crown_type" name="crown_id[]">
+                  <option></option>
+                  @foreach($crowns as $key => $value)
+                    <option value="{{ $value->id }}">{{ $value->name }}({{ $value->len }}mm)</option>
+                  @endforeach
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label" for="crown_side">Komplekt</label>
+                <select name="crown_side[]" id="crown_side" class="form-select crown_side">
+                  <option value="0"></option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                </select>
+              </div>
+            </div>
+            <div class="row mt-3 mb-3">
+              <div class="col-md-9">
+                <label class="form-label" for="cube_type">Kubik</label>
+                <select class="form-select cube_name" id="cube_type" name="cube_name[]">
+                  <option></option>
+                  @foreach($cubes as $key => $value)
+                    <option value="{{ $value->name }}">{{ $value->name }}</option>
+                  @endforeach
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label" for="cube_side">Komplekt</label>
+                <select name="cube_side[]" id="cube_side" class="form-select cube_side">
+                  <option value="0"></option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                </select>
               </div>
             </div>
           </div>
           <div class="offcanvas-footer">
-            <button type="button" class="btn btn-primary mb-2 d-grid w-100 jamb_save">Saqlash</button>
+            <button type="button" class="btn btn-primary mb-2 d-grid w-100 jccb_save">Saqlash</button>
             <button
               type="button"
               class="btn btn-outline-secondary d-grid w-100"
@@ -718,77 +808,78 @@
         </div>
 
         <div class="row jamb_without_labels" style="display:none;">
-          <div class="col-md-10">
-            <select class="form-select jamb_id" id="jamb_type" name="jamb_id[]">
-              <option value=""></option>
+          <div class="col-md-9">
+            <select class="form-select jamb_name" id="jamb_type" name="jamb_name[]">
+              <option></option>
               @foreach($jambs as $key => $value)
-                <option value="{{ $value->id }}">{{ $value->name }}</option>
+                <option value="{{ $value->name }}">{{ $value->name }}</option>
               @endforeach
             </select>
           </div>
-          <div class="col-md-2">
-            <input class="form-control jamb_count" type="text" id="jamb_count" name="jamb_count[]">
+          <div class="col-md-3">
+            <select name="jamb_side[]" id="jamb_side" class="form-select jamb_side">
+              <option value="0"></option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Shisha parametrlari -->
+        <div class="modal fade" id="glass_params_modal" tabindex="-1" data-bs-backdrop="static">
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3 class="">Shisha tanlash</h3>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-5 mb-3">
+                    <label class="form-label" for="glassfigure">Shisha shakli</label>
+                    <select class="form-select" id="glassfigure" name="glassfigure_id">
+                      <option value="0">Tanlang</option>
+                      @foreach($glass_figures as $key => $value)
+                        <option data-path="{{ $value->path }}" value="{{ $value->id }}">{{ $value->name }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                  <div class="col-md-5 mb-3">
+                    <label class="form-label" for="glasstype">Shisha turi</label>
+                    <select class="form-select" id="glasstype" name="glasstype_id"></select>
+                  </div>
+                  <div class="col-md-2 mb-3">
+                    <?php $glass_counts = array(1, 2, 3, 4, 5); ?>
+                    <label class="form-label" for="glasscount">Shisha soni</label>
+                    <select class="form-select" id="glasscount" name="glasscount">
+                      <option value="0">Tanlang</option>
+                      @foreach($glass_counts as $value)
+                        <option value="{{ $value }}">{{ $value }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-2">
+                    <img src="" alt="" id="glassfigure_img" style="width: 150px; height: 400px;">
+                  </div>
+                  <div class="col-md-5"></div>
+                  <div class="col-md-5"></div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Yopish</button>
+                <button type="button" class="btn btn-primary save_glass">Saqlash</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      <!-- Shisha parametrlari -->
-      <div class="modal fade" id="glass_params_modal" tabindex="-1" data-bs-backdrop="static">
-        <div class="modal-dialog modal-xl">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h3 class="">Shisha tanlash</h3>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <div class="row">
-                <div class="col-md-5 mb-3">
-                  <label class="form-label" for="glassfigure">Shisha shakli</label>
-                  <select class="form-select" id="glassfigure" name="glassfigure_id">
-                    <option value="0">Tanlang</option>
-                    @foreach($glass_figures as $key => $value)
-                      <option data-path="{{ $value->path }}" value="{{ $value->id }}">{{ $value->name }}</option>
-                    @endforeach
-                  </select>
-                </div>
-                <div class="col-md-5 mb-3">
-                  <label class="form-label" for="glasstype">Shisha turi</label>
-                  <select class="form-select" id="glasstype" name="glasstype_id"></select>
-                </div>
-                <div class="col-md-2 mb-3">
-                  <?php $glass_counts = array(1, 2, 3, 4, 5); ?>
-                  <label class="form-label" for="glasscount">Shisha soni</label>
-                  <select class="form-select" id="glasscount" name="glasscount">
-                    <option value="0">Tanlang</option>
-                    @foreach($glass_counts as $value)
-                      <option value="{{ $value }}">{{ $value }}</option>
-                    @endforeach
-                  </select>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-2">
-                  <img src="" alt="" id="glassfigure_img" style="width: 150px; height: 400px;">
-                </div>
-                <div class="col-md-5"></div>
-                <div class="col-md-5"></div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Yopish</button>
-              <button type="button" class="btn btn-primary save_glass">Saqlash</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      
     </div>
   </div>
 @endsection
@@ -813,20 +904,6 @@
       let i = 1;
       let door_parameters_div_index = 0;
 
-      $('body').on('click', '.jamb_plus', function(){
-        let targetDiv = document.getElementsByClassName("jamb_without_labels")[0];
-        $(".jamb_content").last().append('<div class="row jamb_div mb-3">'+targetDiv.innerHTML+'</div>');
-        i++;
-      });
-
-      $('body').on('click', '.jamb_minus', function(){
-        if(i>1){
-          let childDiv = $('body').find('.jamb_content .row').last();
-          childDiv.remove();
-          i--;
-        }
-      });
-
       let j = $('.doors_content .door_parameters_div').length;
       $('body').on('click', '.door_parameters_plus', function(){
         let targetDiv = document.getElementsByClassName("door_parameters_without_labels")[0];
@@ -835,34 +912,47 @@
         j++;
       });
 
-      $('body').on('click', '.door_parameters_minus', function(){
+      $('body').on('click', '.door_parameters_minus', function() {
         if(j>1){
           let childDiv = $('body').find('.doors_content .door_parameters_div').last();
           childDiv.remove();
           j--;
         }
       });
-
       
       $('body').on('click', '.jamb_btn', function(){
         let index = $(this).closest(".door_parameters_div").data('index');
         door_parameters_div_index = index;
       });
 
-      $('body').on('click', '.jamb_save', function() {
-        let jamb_parameters = [{jamb: "", jamb_count: 0}];
-        let jambs = document.getElementsByClassName("jamb_id");
-        let jamb_counts = document.getElementsByName('jamb_count[]');
-        for (let i = 0; i < jamb_counts.length; i++) {
-          jamb_parameters[i] = {jamb: jambs[i].value, jamb_count: jamb_counts[i].value};
-        }
-        $('.door_parameters_div').find('input[name="jamb[]"]').eq(door_parameters_div_index).val(JSON.stringify(jamb_parameters));
-        let divsToRemove = document.getElementsByClassName("jamb_div");
-        for (var i = divsToRemove.length-1; i > 0; i--) {
-          divsToRemove[i].remove();
-        }
-        $(".jamb_id").val("");
-        $(".jamb_count").val("");
+      $('body').on('click', '.jccb_save', function() {
+        let jamb_name = $('.jamb_name').val();
+        let jamb_side = $('.jamb_side').val();
+
+        let crown_id = $('.crown_id').val();
+        let crown_side = $('.crown_side').val();
+
+        let cube_name = $('.cube_name').val();
+        let cube_side = $('.cube_side').val();
+
+        $('.door_parameters_div').find('input[name="hidden_jamb_name[]"]').eq(door_parameters_div_index).val(jamb_name);
+        $('.door_parameters_div').find('input[name="hidden_jamb_side[]"]').eq(door_parameters_div_index).val(jamb_side);
+
+        $('.door_parameters_div').find('input[name="hidden_crown_id[]"]').eq(door_parameters_div_index).val(crown_id);
+        $('.door_parameters_div').find('input[name="hidden_crown_side[]"]').eq(door_parameters_div_index).val(crown_side);
+
+        $('.door_parameters_div').find('input[name="hidden_cube_name[]"]').eq(door_parameters_div_index).val(cube_name);
+        $('.door_parameters_div').find('input[name="hidden_cube_side[]"]').eq(door_parameters_div_index).val(cube_side);
+
+        $(".jamb_name").val("");
+        $(".jamb_side").val("");
+
+        $(".crown_id").val("");
+        $(".crown_side").val("");
+
+        $(".cube_name").val("");
+        $(".cube_side").val("");
+
         $("#jambCanvasClose").click();
       });
 
@@ -884,10 +974,10 @@
       });
 
       $('body').on('click', '.save_framoga', function(){
-        let framoga_type = document.getElementsByClassName('framoga_type').item(0);
-        let framoga_figure = document.getElementsByClassName("framoga_figure").item(0);
-        $('.door_parameters_div').find('input[name="hidden_framoga_type[]"]').eq(door_parameters_div_index).val(framoga_type.value);
-        $('.door_parameters_div').find('input[name="hidden_framoga_figure[]"]').eq(door_parameters_div_index).val(framoga_figure.value);
+        let framoga_type = $('.framoga_type').find(':selected').val();
+        let framoga_figure = $('.framoga_figure').find(':selected').val();
+        $('.door_parameters_div').find('input[name="hidden_framoga_type[]"]').eq(door_parameters_div_index).val(framoga_type);
+        $('.door_parameters_div').find('input[name="hidden_framoga_figure[]"]').eq(door_parameters_div_index).val(framoga_figure);
         $(".framoga_type").val('');
         $(".framoga_figure").val('');
         $("#modalframoga").modal("hide");
@@ -909,30 +999,6 @@
         closeCanvas.click();
       });
 
-      $('body').on('change', '#doortype', function(){ 
-        let doortype_id = $(this).val();
-        $.ajax({
-          headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-          },
-          url: "{{ route('reload-jamb') }}",
-          method: "POST",
-          data: {doortype_id: doortype_id},
-          success: function(data) {
-            if (data.jambs.length > 0) {
-              $.each(data.jambs, function(index, jamb) {
-                $('.jamb_div select, .jamb_without_labels select').html('<option></option>');
-                $('.jamb_div select, .jamb_without_labels select').append($("<option></option>")
-                      .attr("value", jamb.id)
-                      .text(jamb.name));
-              });
-            } else {
-              $('.jamb_div select, .jamb_without_labels select').html('<option></option>');
-            }
-          }
-        }); 
-      });
-
       $('body').on('change', '.courier_check', function(){
         if ($(this).is(':checked')) {
           $("input.courier_price").css("display", "block");
@@ -943,9 +1009,9 @@
 
       $("body").on("change", "select#ornament", function() {
         let ornament_type = $(this).find(":selected").text();
+        let index = $(this).closest(".door_parameters_div").data('index');
+        door_parameters_div_index = index;
         if (ornament_type == 'Derazali'){
-          let index = $(this).closest(".door_parameters_div").data('index');
-          door_parameters_div_index = index;
           $("#glass_params_modal").modal("show");
         }
       });

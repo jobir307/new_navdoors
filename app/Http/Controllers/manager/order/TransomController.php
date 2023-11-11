@@ -30,8 +30,13 @@ class TransomController extends Controller
      */
     public function create()
     {
-        $transoms = DB::select('SELECT id, name FROM transoms ORDER BY name');
-        $customers = DB::select('SELECT id, name FROM customers WHERE type="Xaridor" ORDER BY created_at DESC');
+        $transoms = DB::select('SELECT a.id, 
+                                       a.name AS transom_name,
+                                       b.name AS doortype_name
+                                FROM transoms a 
+                                INNER JOIN doortypes b ON b.id=a.doortype_id
+                                ORDER BY a.name, b.name');
+        $customers = DB::select('SELECT id, name FROM customers WHERE type IN ("Xaridor", "Yuridik") ORDER BY created_at DESC');
         $dealers = DB::select('SELECT id, name FROM customers WHERE type="Diler" ORDER BY created_at DESC');
 
         return view('manager.order.transom.create', compact('transoms', 'customers', 'dealers'));
@@ -45,7 +50,11 @@ class TransomController extends Controller
      */
     public function store(Request $request)
     {
-        
+        if (empty($request->customer_radio)){
+            $request->customer_radio = "dealer";
+            $request->dealer = Auth::user()->dealer_id;
+        }
+
         $contract_price = 0;
         $order = new Order();
         $transom_parameters = array(
@@ -82,29 +91,25 @@ class TransomController extends Controller
                 $transom_size = 0;
                 $transom_size = $request['transom_height'][$i] * $request['transom_width_top'][$i] / 1000000;
     
+                $transom_parameters['color'] = $request->transom_color;
+                $transom_parameters['name'] = $transom->name;
+                $transom_parameters['count'] = $request['count'][$i];
+                $transom_parameters['height'] = $request['transom_height'][$i];
+                $transom_parameters['width_top'] = $request['transom_width_top'][$i];
+                $transom_parameters['width_bottom'] = $request['transom_width_bottom'][$i];
+                
                 if ($request->customer_radio == "dealer"){
                     $transom_price = $transom_size * $transom->dealer_price;
-                    $transom_parameters['color'] = $request->transom_color;
-                    $transom_parameters['name'] = $transom->name;
-                    $transom_parameters['count'] = $request['count'][$i];
                     $transom_parameters['price'] = $transom_price;
                     $transom_parameters['total_price'] = $transom_price * $request['count'][$i];
-                    $transom_parameters['height'] = $request['transom_height'][$i];
-                    $transom_parameters['width_top'] = $request['transom_width_top'][$i];
-                    $transom_parameters['width_bottom'] = $request['transom_width_bottom'][$i];
                 } else {
                     $transom_price = $transom_size * $transom->retail_price;
-                    $transom_parameters['color'] = $request->transom_color;
-                    $transom_parameters['name'] = $transom->name;
-                    $transom_parameters['count'] = $request['count'][$i];
                     $transom_parameters['price'] = $transom_price;
                     $transom_parameters['total_price'] = $transom_price * $request['count'][$i];
-                    $transom_parameters['height'] = $request['transom_height'][$i];
-                    $transom_parameters['width_top'] = $request['transom_width_top'][$i];
-                    $transom_parameters['width_bottom'] = $request['transom_width_bottom'][$i];
                 }
     
-                DB::insert('INSERT INTO transom_results(transom_color,
+                DB::insert('INSERT INTO transom_results(transom_id,
+                                                        transom_color,
                                                         name,
                                                         height,
                                                         width_top,
@@ -112,7 +117,8 @@ class TransomController extends Controller
                                                         count,
                                                         price,
                                                         total_price) 
-                            VALUES (?,?,?,?,?,?,?,?)', [
+                            VALUES (?,?,?,?,?,?,?,?,?)', [
+                                    $transom->id,
                                     $transom_parameters['color'], 
                                     $transom_parameters['name'], 
                                     $transom_parameters['height'], 
@@ -149,9 +155,15 @@ class TransomController extends Controller
         $order->contract_price = $contract_price;
         $order->with_installation = $with_installation;
         $order->installation_price = $installation_price;
+        $order->transom_installation_price = $installation_price;
         $order->with_courier = $with_courier;
         $order->courier_price = $courier_price;
         $order->last_contract_price = $contract_price;
+        $order->comments = $request->comments;
+        $order->who_created_userid=Auth::user()->id;
+        $order->who_created_username=Auth::user()->username;
+        $order->created_at = date('Y-m-d H:i:s');
+        $order->updated_at = date('Y-m-d H:i:s');
         $order->save();
 
         DB::update('UPDATE transom_results SET order_id=? 
@@ -179,7 +191,6 @@ class TransomController extends Controller
     public function show($id)
     {
         $order = DB::select('SELECT a.id, 
-                                    a.door_id, 
                                     a.phone_number, 
                                     a.contract_number, 
                                     a.deadline, 
@@ -188,16 +199,18 @@ class TransomController extends Controller
                                     a.rebate_percent,
                                     a.contract_price, 
                                     a.last_contract_price,
-                                    b.name as customer, 
+                                    b.name AS customer, 
+                                    a.comments,
                                     (SELECT SUM(amount)
                                     FROM stocks
                                     WHERE invoice_id=c.id
                                     GROUP BY invoice_id
                                     ) AS paid,
-                                    j.name as process
+                                    c.status,
+                                    a.job_name AS process,
+                                    a.who_created_userid
                             FROM (orders a, customers b)
                             LEFT JOIN invoices c ON a.id=c.order_id
-                            LEFT JOIN jobs j ON j.id=a.job_id
                             WHERE a.customer_id=b.id AND a.id=?', [$id]);
 
         $transom_results = DB::select('SELECT * FROM transom_results WHERE order_id=?', [$id]);
@@ -214,9 +227,14 @@ class TransomController extends Controller
     public function edit($id)
     {
         $order = Order::find($id);
-        $transoms = DB::select('SELECT id, name FROM transoms ORDER BY name');
+        $transoms = DB::select('SELECT a.id, 
+                                       a.name AS transom_name,
+                                       b.name AS doortype_name
+                                FROM transoms a 
+                                INNER JOIN doortypes b ON b.id=a.doortype_id
+                                ORDER BY a.name, b.name');
         $transom_results = DB::select('SELECT * FROM transom_results WHERE order_id=?', [$id]);
-        $customers = DB::select('SELECT id, name FROM customers WHERE type="Xaridor" ORDER BY created_at DESC');
+        $customers = DB::select('SELECT id, name FROM customers WHERE type IN ("Xaridor", "Yuridik") ORDER BY created_at DESC');
         $dealers = DB::select('SELECT id, name FROM customers WHERE type="Diler" ORDER BY created_at DESC');
 
         return view('manager.order.transom.update', compact('order', 'transoms', 'transom_results', 'customers', 'dealers'));
@@ -231,6 +249,11 @@ class TransomController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if (empty($request->customer_radio)){
+            $request->customer_radio = "dealer";
+            $request->dealer = Auth::user()->dealer_id;
+        }
+
         $contract_price = 0;
         DB::delete("DELETE FROM transom_results WHERE order_id=?", [$id]);
         $order = Order::find($id);
@@ -269,29 +292,24 @@ class TransomController extends Controller
                 $transom_size = 0;
                 $transom_size = $request['transom_height'][$i] * $request['transom_width_top'][$i] / 1000000;
     
+                $transom_parameters['color'] = $request->transom_color;
+                $transom_parameters['name'] = $transom->name;
+                $transom_parameters['count'] = $request['count'][$i];
+                $transom_parameters['height'] = $request['transom_height'][$i];
+                $transom_parameters['width_top'] = $request['transom_width_top'][$i];
+                $transom_parameters['width_bottom'] = $request['transom_width_bottom'][$i];
+                
                 if ($request->customer_radio == "dealer"){
-                    $transom_price = $transom_size * $transom->dealer_price;
-                    $transom_parameters['color'] = $request->transom_color;
-                    $transom_parameters['name'] = $transom->name;
-                    $transom_parameters['count'] = $request['count'][$i];
-                    $transom_parameters['price'] = $transom_price;
-                    $transom_parameters['total_price'] = $transom_price * $request['count'][$i];
-                    $transom_parameters['height'] = $request['transom_height'][$i];
-                    $transom_parameters['width_top'] = $request['transom_width_top'][$i];
-                    $transom_parameters['width_bottom'] = $request['transom_width_bottom'][$i];
+                    $transom_parameters['price'] = $transom_size * $transom->dealer_price;
+                    $transom_parameters['total_price'] = $transom_size * $transom->dealer_price * $request['count'][$i];
                 } else {
-                    $transom_price = $transom_size * $transom->retail_price;
-                    $transom_parameters['color'] = $request->transom_color;
-                    $transom_parameters['name'] = $transom->name;
-                    $transom_parameters['count'] = $request['count'][$i];
-                    $transom_parameters['price'] = $transom_price;
-                    $transom_parameters['total_price'] = $transom_price * $request['count'][$i];
-                    $transom_parameters['height'] = $request['transom_height'][$i];
-                    $transom_parameters['width_top'] = $request['transom_width_top'][$i];
-                    $transom_parameters['width_bottom'] = $request['transom_width_bottom'][$i];
+                    $transom_parameters['price'] = $transom_size * $transom->retail_price;
+                    $transom_parameters['total_price'] = $transom_size * $transom->retail_price * $request['count'][$i];
                 }
     
-                DB::insert('INSERT INTO transom_results(transom_color,
+                DB::insert('INSERT INTO transom_results(order_id,
+                                                        transom_id,
+                                                        transom_color,
                                                         name,
                                                         height,
                                                         width_top,
@@ -299,7 +317,9 @@ class TransomController extends Controller
                                                         count,
                                                         price,
                                                         total_price) 
-                            VALUES (?,?,?,?,?,?,?,?)', [
+                            VALUES (?,?,?,?,?,?,?,?,?,?)', [
+                                    $id,
+                                    $transom->id,
                                     $transom_parameters['color'], 
                                     $transom_parameters['name'], 
                                     $transom_parameters['height'], 
@@ -335,14 +355,13 @@ class TransomController extends Controller
         $order->contract_price = $contract_price;
         $order->with_installation = $with_installation;
         $order->installation_price = $installation_price;
+        $order->transom_installation_price = $installation_price;
         $order->with_courier = $with_courier;
         $order->courier_price = $courier_price;
         $order->last_contract_price = $contract_price;
+        $order->comments = $request->comments;
+        $order->updated_at = date('Y-m-d H:i:s');
         $order->save();
-
-        DB::update('UPDATE transom_results SET order_id=? 
-                    ORDER BY created_at DESC
-                    LIMIT ?', [$order->id, $total_count]);
 
         $invoice = Invoice::where('order_id', $id)->first();
         $invoice->payer = Customer::find($order->customer_id)->name;

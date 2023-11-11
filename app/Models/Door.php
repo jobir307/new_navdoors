@@ -14,6 +14,9 @@ class Door extends Model
         'jamb_parameters',
         'transom_parameters',
         'glass_parameters',
+        'crown_parameters',
+        'boot_parameters',
+        'cube_parameters',
         'door_color',
         'ornamenttype_id',
     ];
@@ -23,5 +26,8 @@ class Door extends Model
         'jamb_parameters',
         'transom_parameters',
         'glass_parameters',
+        'crown_parameters',
+        'boot_parameters',
+        'cube_parameters',
     ];
 }

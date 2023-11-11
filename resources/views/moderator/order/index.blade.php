@@ -22,7 +22,7 @@
             <li class="nav-item">
               <button
                 type="button"
-                class="nav-link active"
+                class="nav-link"
                 role="tab"
                 data-bs-toggle="tab"
                 data-bs-target="#navs-new-orders"
@@ -60,27 +60,36 @@
             </li>
           </ul>
           <div class="tab-content">
-            <div class="tab-pane fade show active" id="navs-new-orders" role="tabpanel">
+            <div class="tab-pane fade" id="navs-new-orders" role="tabpanel">
               <h5 class="text-primary">Yangi naryadlar ro'yxati</h5>
-              <div class="table-responsive text-nowrap">
-                <table class="table table-bordered table-hover" id="new_orders_table" style="width:100%">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover display nowrap w-100" id="new_orders_table">
                   <thead>
                     <tr>
-                      <th class="text-center" style="width: 20px;">T/r</th>
-                      <th class="text-center">Shartnoma raqami</th>
-                      <th class="text-center">Eshik turi</th>
-                      <th class="text-center">Buyurtmachi</th>
-                      <th class="text-center">Telefon raqami</th>
-                      <th class="text-center">Muddati</th>
-                      <th style="min-width: 130px; width: 130px;"></th>
+                      <th class="text-center align-middle" style="width: 20px;" rowspan=2>T/r</th>
+                      <th class="text-center align-middle" rowspan=2>Shartnoma raqami</th>
+                      <th class="text-center align-middle" rowspan=2>Mahsulot</th>
+                      <th class="text-center align-middle" rowspan=2>Buyurtmachi</th>
+                      <th class="text-center align-middle" rowspan=2>Telefon raqami</th>
+                      <th class="text-center align-middle" colspan=3>Vaqt</th>
+                      <th class="text-center align-middle" rowspan=2>Kim yaratdi</th>
+                      <th style="width: 70px;" rowspan=2></th>
                     </tr>
                     <tr>
-                      <td></td>
+                      <th class="text-center align-middle">Buyurtma qilingan</th>
+                      <th class="text-center align-middle">Tasdiqlangan</th>
+                      <th class="text-center align-middle">Topshirish kerak</th>
+                    </tr>
+                    <tr>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="T/r"></td>
                       <td><input class="form-control form-control-sm" type="text" placeholder="Shartnoma raqami"></td>
-                      <td><input class="form-control form-control-sm" type="text" placeholder="Eshik turi"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Mahsulot"></td>
                       <td><input class="form-control form-control-sm" type="text" placeholder="Buyurtmachi"></td>
                       <td><input class="form-control form-control-sm" type="text" placeholder="Telefon raqami"></td>
-                      <td><input class="form-control form-control-sm" type="text" placeholder="Muddati"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Buyurtma qilingan"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Tasdiqlangan"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Topshirish"></td>
+                      <td></td>
                       <td></td>
                     </tr>
                   </thead>
@@ -88,20 +97,18 @@
                     @foreach($new_orders as $key => $value)
                       <tr>
                         <td class="text-center">{{ $key + 1 }}</td>
-                        <td>{{ $value->contract_number }}</td>
-                        <td>{{ $value->doortype }}</td>
+                        <td>{{ $value->id }}/{{ $value->contract_number }}</td>
+                        <td>{{ $value->product }}</td>
                         <td>{{ $value->customer }}</td>
                         <td>{{ $value->phone_number }}</td>
+                        <td>{{ date("d.m.Y H:i", strtotime($value->when_created)) }}</td>
+                        <td>{{ !is_null($value->verified_time) ? date("d.m.Y H:i", strtotime($value->verified_time)) : "" }}</td>
                         <td>{{ date("d.m.Y", strtotime($value->deadline)) }}</td>
+                        <td>{{ $value->who_created }}</td>
                         <td class="text-sm-end">
-                          <button type="button" 
-                             class="btn-sm btn btn-primary start_outfit"
-                             title="Ishlab chiqarishni boshlash" 
-                             data-bs-toggle="modal"
-                             data-bs-target="#start_outfit_modal"
-                             data-order_id="{{ $value->id }}">
-                            Boshlash
-                          </button>
+                          <a href="{{ route('moderator-order-show', $value->id)}}" class="btn-sm btn btn-outline-success" title="Ko'rish">
+                            Ko'rish
+                          </a>
                         </td>
                       </tr>
                     @endforeach
@@ -111,40 +118,68 @@
             </div>
             <div class="tab-pane fade" id="navs-inprocess-orders" role="tabpanel">
               <h5 class="text-primary">Jarayondagi naryadlar ro'yxati</h5>
-              <div class="table-responsive text-nowrap">
-                <table class="table table-bordered table-hover w-100" id="inprocess_orders_table">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover display nowrap w-100" id="inprocess_orders_table">
                   <thead>
                     <tr>
-                      <th class="text-center align-middle" style="width: 20px;">T/r</th>
-                      <th class="text-center align-middle">Shartnoma raqami</th>
-                      <th class="text-center">Eshik turi</th>
-                      <th class="text-center align-middle">Buyurtmachi</th>
-                      <th class="text-center align-middle" style="width: 160px;">Telefon raqami</th>
-                      <th class="text-center align-middle">Muddati</th>
-                      <th class="text-center align-middle">Holati</th>
+                      <th class="text-center align-middle" style="width: 20px;" rowspan=2>T/r</th>
+                      <th class="text-center align-middle" rowspan=2>Shartnoma raqami</th>
+                      <th class="text-center align-middle" rowspan=2>Mahsulot</th>
+                      <th class="text-center align-middle" rowspan=2>Buyurtmachi</th>
+                      <th class="text-center align-middle" style="width: 160px;" rowspan=2>Telefon raqami</th>
+                      <th class="text-center align-middle" colspan=3>Vaqti</th>
+                      <th class="text-center align-middle" rowspan=2>Holati</th>
+                      <th class="text-center align-middle" rowspan=2>Kim yaratdi</th>
                       <th rowspan="2" style="max-width: 50px !important; width: 50px !important;"></th>
                     </tr>
                     <tr>
-                      <td></td>
+                      <th class="text-center align-middle">Buyurtma qilingan</th>
+                      <th class="text-center align-middle">Tasdiqlangan</th>
+                      <th class="text-center align-middle">Topshirish kerak</th>
+                    </tr>
+                    <tr>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="T/r"></td>
                       <td><input class="form-control form-control-sm" type="text" placeholder="Shartnoma raqami"></td>
-                      <td><input class="form-control form-control-sm" type="text" placeholder="Eshik turi"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Mahsulot"></td>
                       <td><input class="form-control form-control-sm" type="text" placeholder="Buyurtmachi"></td>
                       <td><input class="form-control form-control-sm" type="text" placeholder="Telefon raqami"></td>
-                      <td><input class="form-control form-control-sm" type="text" placeholder="Muddati"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Buyurtma qilingan"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Tasdiqlangan"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Topshirish kerak"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Holati"></td>
+                      <td></td>
                       <td></td>
                     </tr>
                   </thead>
                   <tbody>
                     @foreach($inprocess_orders as $key => $value)
-                      <tr>
+                    <?php 
+                      $bgcolor = "";
+                      $color = "";
+                      if ($value->day_diff > 3 && $value->day_diff <= 7) {
+                        $bgcolor = "#ffbf80";
+                        $color = "white";
+                      }
+                      else if ($value->day_diff <= 3){
+                        $bgcolor = "#a6a6a6";
+                        $color = "white";
+                      }
+                    ?>
+                      <tr style="background-color: {{ $bgcolor }}; color: {{ $color }}">
                         <td class="text-center">{{ $key + 1 }}</td>
-                        <td>{{ $value->contract_number }}</td>
-                        <td>{{ $value->doortype }}</td>
+                        <td>{{ $value->id }}/{{ $value->contract_number }}</td>
+                        <td>{{ $value->product }}</td>
                         <td>{{ $value->customer }}</td>
                         <td>{{ $value->phone_number }}</td>
+                        <td>{{ date("d.m.Y H:i", strtotime($value->when_created)) }}</td>
+                        <td>{{ !is_null($value->verified_time) ? date("d.m.Y H:i", strtotime($value->verified_time)) : "" }}</td>
                         <td>{{ date("d.m.Y", strtotime($value->deadline)) }}</td>
                         <td>{{ $value->job_name }}</td>
+                        <td>{{ $value->who_created }}</td>
                         <td class="text-sm-end">
+                          <a href="{{ route('moderator-order-show', $value->id)}}" class="btn-sm btn btn-icon btn-outline-success" title="Ko'rish">
+                            <i class="bx bx-show"></i>
+                          </a>
                           <a href="{{ route('form-outfit', $value->id) }}" class="btn-sm btn btn-secondary" title="Naryad shakllantirish">
                             Naryad
                           </a>
@@ -157,26 +192,36 @@
             </div>
             <div class="tab-pane fade" id="navs-completed-orders" role="tabpanel">
               <h5 class="text-primary">Yakunlangan naryadlar ro'yxati</h5>
-              <div class="table-responsive text-nowrap">
-                <table class="table table-bordered table-hover w-100" id="completed_orders_table">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover display nowrap w-100" id="completed_orders_table">
                   <thead>
                     <tr>
-                      <th class="text-center align-middle" style="width: 20px;">T/r</th>
-                      <th class="text-center align-middle">Shartnoma raqami</th>
-                      <th class="text-center">Eshik turi</th>
-                      <th class="text-center align-middle">Buyurtmachi</th>
-                      <th class="text-center align-middle" style="width: 160px;">Telefon raqami</th>
-                      <th class="text-center align-middle">Muddati</th>
-                      <th class="text-center align-middle">Holati</th>
-                      <th rowspan="2" style="max-width: 50px !important; width: 50px !important;"></th>
+                      <th class="text-center align-middle" style="width: 20px;" rowspan="2">T/r</th>
+                      <th class="text-center align-middle" rowspan="2">Shartnoma raqami</th>
+                      <th class="text-center align-middle" rowspan="2">Mahsulot</th>
+                      <th class="text-center align-middle" rowspan="2">Buyurtmachi</th>
+                      <th class="text-center align-middle" style="width: 160px;" rowspan="2">Telefon raqami</th>
+                      <th class="text-center align-middle" colspan="3">Vaqti</th>
+                      <th class="text-center align-middle" rowspan="2">Holati</th>
+                      <th class="text-center align-middle" rowspan="2">Kim yaratdi</th>
+                      <th rowspan="2" style="width: 100px !important;"></th>
                     </tr>
                     <tr>
-                      <td></td>
+                      <th class="text-center align-middle">Buyurtma qilingan</th>
+                      <th class="text-center align-middle">Tasdiqlangan</th>
+                      <th class="text-center align-middle">Topshirish kerak</th>
+                    </tr>
+                    <tr>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="T/r"></td>
                       <td><input class="form-control form-control-sm" type="text" placeholder="Shartnoma raqami"></td>
-                      <td><input class="form-control form-control-sm" type="text" placeholder="Eshik turi"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Mahsulot"></td>
                       <td><input class="form-control form-control-sm" type="text" placeholder="Buyurtmachi"></td>
                       <td><input class="form-control form-control-sm" type="text" placeholder="Telefon raqami"></td>
-                      <td><input class="form-control form-control-sm" type="text" placeholder="Muddati"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Buyurtma qilingan"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Tasdiqlangan"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Topshirish kerak"></td>
+                      <td></td>
+                      <td></td>
                       <td></td>
                     </tr>
                   </thead>
@@ -184,56 +229,24 @@
                     @foreach($completed_orders as $key => $value)
                       <tr>
                         <td class="text-center">{{ $key + 1 }}</td>
-                        <td>{{ $value->contract_number }}</td>
-                        <td>{{ $value->doortype }}</td>
+                        <td>{{ $value->id }}/{{ $value->contract_number }}</td>
+                        <td>{{ $value->product }}</td>
                         <td>{{ $value->customer }}</td>
                         <td>{{ $value->phone_number }}</td>
+                        <td>{{ date("d.m.Y H:i", strtotime($value->when_created)) }}</td>
+                        <td>{{ !is_null($value->verified_time) ? date("d.m.Y H:i", strtotime($value->verified_time)) : "" }}</td>
                         <td>{{ date("d.m.Y", strtotime($value->deadline)) }}</td>
-                        <td>{{ $value->job_name }}</td>
+                        <td>{{ $value->job_name }}({{ date("d.m.Y H:i",  strtotime($value->moderator_send_time)) }})</td>
+                        <td>{{ $value->who_created }}</td>
                         <td class="text-sm-end">
-                          <a href="{{ route('form-outfit', $value->id) }}" class="btn-sm btn btn-secondary" title="Naryad shakllantirish">
-                            Naryad
-                          </a>
+                          <a href="{{ route('moderator-order-show', $value->id)}}" class="btn btn-sm btn-outline-success" title="Ko'rish">Ko'rish</a>
+                          <a href="{{ route('form-outfit', $value->id) }}" class="btn-sm btn btn-secondary" title="Naryad shakllantirish">Naryad</a>
                         </td>
                       </tr>
                     @endforeach
                   </tbody>
                 </table>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal -->
-      <div class="modal fade" id="start_outfit_modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title text-primary" id="modalCenterTitle">Ishlab chiqarish oynasi</h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <div class="row">
-                <div class="col mb-3">
-                  <h5>Ishlab chiqarish jarayonini boshlashga ruhsat beraman.</h5>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <form action="{{ route('start-process') }}" method="POST">
-                @csrf
-                <input type="hidden" name="order_id"  class="started_order_id" value="">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                  Yopish
-                </button>
-                <button type="submit" class="btn btn-primary">Tasdiqlash</button>
-              </form>
             </div>
           </div>
         </div>
@@ -250,8 +263,12 @@
   <script src="{{asset('assets/datatable/js/dataTables.bootstrap5.min.js')}}" type="text/javascript"></script>
   <script type="text/javascript">
     $(document).ready(function () {
-      let table_new_orders = $('#new_orders_table').DataTable({
+      let table_new_orders = new DataTable('#new_orders_table', {
         dom: 'Qlrtp',
+        lengthMenu: [
+          [25, 50, 100, -1],
+          [25, 50, 100, "Hammasi"]
+        ],
         "ordering": false
       });
       table_new_orders.columns().every( function () {
@@ -263,8 +280,12 @@
         });
       });
 
-      let inprocess_orders_table = $('#inprocess_orders_table').DataTable({
+      let inprocess_orders_table = new DataTable('#inprocess_orders_table', {
         dom: 'Qlrtp',
+        lengthMenu: [
+          [25, 50, 100, -1],
+          [25, 50, 100, "Hammasi"]
+        ],
         "ordering": false
       });
       inprocess_orders_table.columns().every( function () {
@@ -276,12 +297,42 @@
         });
       });
 
-      $('body').on('click', '.start_outfit', function(){
-        let order_id = $(this).data('order_id');
-        $(".started_order_id").val(order_id);
+      let completed_orders_table = new DataTable('#completed_orders_table', {
+        dom: 'Qlrtp',
+        lengthMenu: [
+            [25, 50, 100, -1],
+            [25, 50, 100, "Hammasi"]
+        ],
+        "ordering": false
       });
+      completed_orders_table.columns().every( function () {
+        let column = this;
+        $('input', this.header()).on('keyup change', function () {
+            column
+                .search( this.value )
+                .draw();
+        });
+      });
+    });
+
+    $(function(){
+      $('button[data-bs-toggle="tab"]').on('click', function(){
+        localStorage.setItem('orderActiveTab', $(this).attr('data-bs-target'));
+      });
+      
+      let activeTab = localStorage.getItem('orderActiveTab');
+      
+      if(activeTab){
+        $(".tab-pane .fade").removeClass("show active");
+        $("div.tab-pane"+activeTab).addClass("show active");
+        $('.nav-item button').removeClass('active');
+        $('.nav-item button[data-bs-target="' + activeTab + '"]').addClass('active');
+        $('.nav-item button[data-bs-target="' + activeTab + '"]').attr("aria-selected", "true");
+      } else {
+        $("div#navs-new-orders").addClass("show active");
+        $('.nav-item button[data-bs-target="#navs-new-orders"]').addClass('active');
+        $('.nav-item button[data-bs-target="#navs-new-orders"]').attr("aria-selected", "true");
+      }
     });
   </script>
 @endsection
-
-

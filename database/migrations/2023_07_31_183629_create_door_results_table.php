@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('door_results', function (Blueprint $table) {
             $table->id();
+            $table->integer('order_id')->nullable();
             $table->integer('door_id')->nullable();
             $table->string('width')->nullable()->comment("eshik eni");
             $table->string('height')->nullable()->comment("eshik bo'yi");
@@ -29,7 +30,9 @@ return new class extends Migration
             $table->string('box_width')->nullable()->comment("karobka eni");
             $table->string('box_height')->nullable()->comment("karobka bo'yi");
             $table->string('lock_type')->nullable()->comment("zamok turi");
+            $table->integer('transom_id')->nullable()->comment("dabor id");
             $table->string('transom')->nullable()->comment("dabor");
+            $table->string('transom_name')->nullable();
             $table->string('transom_width')->nullable()->comment("dabor eni");
             $table->string('transom_height')->nullable()->comment("dabor bo'yi");
             $table->string('transom_thickness')->nullable()->comment("dabor qalinligi");
@@ -55,6 +58,18 @@ return new class extends Migration
             $table->string('wall_thickness')->nullable()->comment("devor qalinligi");
             $table->string('loop_name')->nullable()->comment("chaspak nomi");
             $table->string('loop_count')->nullable()->comment("chaspak soni");
+            $table->string('glass_type')->nullable()->comment("shisha turi");
+            $table->string('glass_figure')->nullable()->comment("shisha shakli");
+            $table->integer('glass_count')->nullable()->comment("shisha soni");
+            $table->integer('crown_id')->nullable()->comment("korona id");
+            $table->string('crown_name')->nullable()->comment("korona nomi");
+            $table->integer('crown_count')->nullable()->comment("korona soni");
+            $table->integer('cube_id')->nullable()->comment("kubik id");
+            $table->string('cube_name')->nullable()->comment("kubik nomi");
+            $table->integer('cube_count')->nullable()->comment("kubik soni");
+            $table->integer('boot_id')->nullable()->comment("sapog id");
+            $table->string('boot_name')->nullable()->comment("sapog nomi");
+            $table->integer('boot_count')->nullable()->comment("sapog soni");
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent();
         });

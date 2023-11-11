@@ -111,7 +111,7 @@
       });
 
       $("#doortype_table").DataTable({
-        "dom": 'rtp',
+        "dom": 'lrtp',
         "ordering": false
       });
     });

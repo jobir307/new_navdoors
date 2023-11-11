@@ -19,7 +19,7 @@ class ManagerMiddleware
     {
         if (Auth::check()){
         
-            if(Auth::user()->isManager() || Auth::user()->isAdmin())
+            if(Auth::user()->isManager() || Auth::user()->isAdmin() || Auth::user()->isDealer())
             {
                 return $next($request);
             }

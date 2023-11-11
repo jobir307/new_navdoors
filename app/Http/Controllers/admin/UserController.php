@@ -18,13 +18,15 @@ class UserController extends Controller
     {
         $roles = DB::table('roles')->get(['id', 'name']);
 
-        $users = DB::select('SELECT a.id, a.username, a._password, b.name as role 
-                             FROM users a, roles b 
+        $users = DB::select('SELECT a.id, a.username, a._password, b.name AS role, c.name AS dealer_name 
+                             FROM (users a, roles b)
+                             LEFT JOIN customers c ON a.dealer_id=c.id
                              WHERE a.role_id=b.id
-                             ORDER BY a.created_at DESC
-                            ');
+                             ORDER BY a.role_id');
         
-        return view('admin.user.index', compact('roles', 'users'));
+        $dealers = DB::select('SELECT id, name FROM customers WHERE type="Diler" ORDER BY name');
+
+        return view('admin.user.index', compact('roles', 'users', 'dealers'));
     }
 
     /**
@@ -45,7 +47,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request);
         $request->validate([
             'name' => ['required', 'string', 'max:60'],
             'password' => ['required', 'string', 'max:30'],
@@ -55,7 +56,8 @@ class UserController extends Controller
             'username'  => $request->name,
             '_password' => $request->password,
             'password'  => Hash::make($request->password),
-            'role_id'   => $request->role_id
+            'role_id'   => $request->role_id,
+            'dealer_id' => $request->dealer_id
         ]);
 
         return redirect()->route('users.index');
@@ -78,11 +80,15 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user)
+    public function edit($id)
     {
+        $user = User::find($id);
+
         $roles = DB::table('roles')->get(['id', 'name']);
 
-        return view('admin.user.index', compact('user', 'roles'));
+        $dealers = DB::select('SELECT id, name FROM customers WHERE type="Diler" ORDER BY name');
+
+        return view('admin.user.index', compact('user', 'roles', 'dealers'));
     }
 
     /**
@@ -92,8 +98,11 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
+        // dd($request->dealer_id);
+        $user = User::find($id);
+
         $request->validate([
             'name' => ['required', 'string', 'max:60'],
             'password' => ['required', 'string', 'max:30'],
@@ -103,7 +112,8 @@ class UserController extends Controller
             'username'  => $request->name,
             '_password' => $request->password,
             'password'  => Hash::make($request->password),
-            'role_id'   => $request->role_id
+            'role_id'   => $request->role_id,
+            'dealer_id' => $request->dealer_id
         ]);
 
         return redirect()->route('users.index');

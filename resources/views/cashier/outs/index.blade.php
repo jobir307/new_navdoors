@@ -49,45 +49,50 @@
         @if(isset($outs) && !empty($outs))
           <div class="card">
             <h5 class="card-header">Chiqimlar ro'yxati</h5>
-            <div class="table-responsive text-nowrap m-3">
-              <table class="table table-bordered table-striped" id="outs_table" style="width: 100%">
-                <thead>
-                  <tr>
-                    <th class="text-center align-middle" style="width: 20px;" rowspan="2">T/R</th>
-                    <th class="text-center align-middle" colspan="2">Summa</th>
-                    <th class="text-center align-middle" rowspan="2">To'lov shakli</th>
-                    <th class="text-center align-middle" rowspan="2">Javobgar</th>
-                    <th class="text-center align-middle" rowspan="2">To'lovchi</th>
-                    <th class="text-center align-middle" rowspan="2">Sana</th>
-                  </tr>
-                  <tr>
-                    <th class="text-center align-middle">Raqamlarda</th>
-                    <th class="text-center align-middle">So'z bilan</th>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td><input class="form-control form-control-sm" type="text" placeholder="Raqamlarda"></td>
-                    <td><input class="form-control form-control-sm" type="text" placeholder="So'z bilan"></td>
-                    <td></td>
-                    <td><input class="form-control form-control-sm" type="text" placeholder="Javobgar"></td>
-                    <td><input class="form-control form-control-sm" type="text" placeholder="To'lovchi"></td>
-                    <td><input class="form-control form-control-sm" type="text" placeholder="Sana"></td>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach($outs as $key => $value)
+            <div class="card-body">
+              <div class="table-responsive text-nowrap">
+                <table class="table table-bordered table-hover" id="outs_table">
+                  <thead>
                     <tr>
-                      <td class="text-center">{{ $key + 1 }}</td>
-                      <td>{{ number_format($value->amount, 2, ",", " ") }} сум</td>
-                      <td>{{ $value->in_words }}</td>
-                      <td>{{ $value->payment_type }}</td>
-                      <td>{{ $value->responsible }}</td>
-                      <td>{{ $value->payer }}</td>
-                      <td>{{ $value->day }}</td>
+                      <th class="text-center align-middle" style="width: 20px;" rowspan="2">T/r</th>
+                      <th class="text-center align-middle" rowspan="2">Oluvchi</th>
+                      <th class="text-center align-middle" colspan="2">Summa</th>
+                      <th class="text-center align-middle" rowspan="2">To'lov shakli</th>
+                      <th class="text-center align-middle" rowspan="2">Javobgar</th>
+                      <th class="text-center align-middle" rowspan="2">To'lovchi</th>
+                      <th class="text-center align-middle" rowspan="2">Sana</th>
                     </tr>
-                  @endforeach
-                </tbody>
-              </table>
+                    <tr>
+                      <th class="text-center align-middle">Raqamlarda</th>
+                      <th class="text-center align-middle">So'z bilan</th>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Raqamlarda"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="So'z bilan"></td>
+                      <td></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Javobgar"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="To'lovchi"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Sana"></td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @foreach($outs as $key => $value)
+                      <tr>
+                        <td class="text-center">{{ $value->id }}</td>
+                        <td>{{ $value->reason }}</td>
+                        <td>{{ number_format($value->amount, 2, ",", " ") }} сум</td>
+                        <td>{{ $value->in_words }}</td>
+                        <td>{{ $value->payment_type }}</td>
+                        <td>{{ $value->responsible }}</td>
+                        <td>{{ $value->payer }}</td>
+                        <td>{{ $value->day }}</td>
+                      </tr>
+                    @endforeach
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         @else
@@ -170,6 +175,10 @@
     $(document).ready(function() {
       let table = $('#outs_table').DataTable({
         dom: 'Qrltp',
+        lengthMenu: [
+            [25, 50, 100],
+            [25, 50, 100]
+        ],
         "ordering": false
       });
 

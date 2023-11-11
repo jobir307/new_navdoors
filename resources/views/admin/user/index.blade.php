@@ -21,17 +21,17 @@
             @endif
               @csrf
               <div class="row">
-                <div class="mb-3 col-md-4">
+                <div class="mb-3 col-md-3">
                   <label for="name" class="form-label">Login</label>
                   <input class="form-control" type="text" id="name" name="name" autofocus autocomplete="off" value="{{ $user->username ?? ''  }}"/>
                 </div>
-                <div class="mb-3 col-md-4">
+                <div class="mb-3 col-md-3">
                   <label for="password" class="form-label">Parol</label>
                   <input class="form-control" type="text" name="password" id="password" autocomplete="off" value="{{ $user->_password ?? ''  }}" />
                 </div>
-                <div class="mb-3 col-md-4">
+                <div class="mb-3 col-md-3">
                   <label for="roles" class="form-label">Role</label>
-                  <select id="roles" class="form-select" name="role_id">
+                  <select id="roles" class="form-select role_select" name="role_id">
                     <option value="0"></option>
                     @foreach($roles as $key => $value)
                       @if(isset($user) && $value->id == $user->role_id)
@@ -42,6 +42,31 @@
                     @endforeach
                   </select>
                 </div>
+                @if(isset($user) && $user->role_id == 8)
+                <div class="mb-3 col-md-3 dealer_div" style="display:block;">
+                  <label for="dealer" class="form-label">Diler</label>
+                  <select id="dealer" class="form-select" name="dealer_id">
+                    <option value="0"></option>
+                    @foreach($dealers as $key => $value)
+                      @if($value->id == $user->dealer_id)
+                        <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                      @else
+                        <option value="{{ $value->id }}">{{ $value->name }}</option>
+                      @endif
+                    @endforeach
+                  </select>
+                </div>
+                @else
+                <div class="mb-3 col-md-3 dealer_div" style="display:none;">
+                  <label for="dealer" class="form-label">Diler</label>
+                  <select id="dealer" class="form-select" name="dealer_id">
+                    <option value="0"></option>
+                    @foreach($dealers as $key => $value)
+                      <option value="{{ $value->id }}">{{ $value->name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+                @endif
               </div>
               <div class="mt-2">
                 <button type="submit" class="btn btn-primary me-2">Saqlash</button>
@@ -57,10 +82,11 @@
                 <table class="table table-bordered table-striped" id="user_table">
                   <thead>
                     <tr>
-                      <th style="width: 20px;">T/r</th>
-                      <th>Login</th>
-                      <th>Parol</th>
-                      <th>Role</th>
+                      <th style="width: 20px;" class="text-center">T/r</th>
+                      <th class="text-center">Login</th>
+                      <th class="text-center">Parol</th>
+                      <th class="text-center">Role</th>
+                      <th class="text-center">Diler</th>
                       <th style="width: 140px;"></th>
                     </tr>
                   </thead>
@@ -71,6 +97,7 @@
                         <td><strong>{{ $value->username }}</strong></td>
                         <td>{{ $value->_password }}</td>
                         <td>{{ $value->role }}</td>
+                        <td>{{ $value->dealer_name }}</td>
                         <td>
                           <button type="button" class="btn btn-sm btn-icon btn-outline-danger btn_user_delete" data-id="{{ $value->id }}" data-bs-toggle="modal" data-bs-target="#modalCenter">
                             <i class="bx bx-trash-alt"></i>
@@ -145,6 +172,14 @@
       $('#user_table').DataTable({
         "dom": 'rtp',
         "ordering": false
+      });
+
+      $('body').on("change", ".role_select", function(){
+        let role = $(this).val(); // role = 8 - diler
+        if (role == 8)
+          $(".dealer_div").css("display", "block");
+        else
+          $(".dealer_div").css("display", "none");
       });
     });
   </script>

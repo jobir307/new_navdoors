@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('jambs', function (Blueprint $table) {
             $table->id();
-            $table->integer('doortype_id');
+            $table->string('size');
             $table->string('name');
             $table->integer('dealer_price');
             $table->integer('retail_price');

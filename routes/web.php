@@ -20,3 +20,4 @@ require __DIR__.'/manager.php';
 require __DIR__.'/cashier.php';
 require __DIR__.'/moderator.php';
 require __DIR__.'/accountant.php';
+require __DIR__.'/warehouse.php';

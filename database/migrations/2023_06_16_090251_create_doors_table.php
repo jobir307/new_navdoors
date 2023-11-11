@@ -16,10 +16,13 @@ return new class extends Migration
         Schema::create('doors', function (Blueprint $table) {
             $table->id();
             $table->integer('doortype_id');
-            $table->longText('door_parameters');
-            $table->longText('jamb_parameters');
-            $table->longText('transom_parameters');
-            $table->longText('glass_parameters');
+            $table->longText('door_parameters')->nullable();
+            $table->longText('jamb_parameters')->nullable();
+            $table->longText('transom_parameters')->nullable();
+            $table->longText('glass_parameters')->nullable();
+            $table->longText('crown_parameters')->nullable();
+            $table->longText('boot_parameters')->nullable();
+            $table->longText('cube_parameters')->nullable();
             $table->longText('output')->nullable();
             $table->string('door_color');
             $table->string('ornament_model');

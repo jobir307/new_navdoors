@@ -19,6 +19,10 @@ return new class extends Migration
             $table->text('door_job')->nullable();
             $table->text('transom_job')->nullable();
             $table->text('jamb_job')->nullable();
+            $table->text('nsjamb_job')->nullable();
+            $table->text('crown_job')->nullable();
+            $table->text('boot_job')->nullable();
+            $table->text('cube_job')->nullable();
             $table->text('door_attributes');
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent();

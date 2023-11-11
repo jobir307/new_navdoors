@@ -74,6 +74,29 @@
               </div>
 
               <div class="row d-flex mt-4">
+                <div class="col-md-12 nsjamb_content">
+                  <div class="text-center text-primary display-6">Nostandart nalichnik tayyorlash uchun maosh tayinlash</div>
+                  <div class="row">
+                    <div class="col-md-10"></div>
+                    <div class="col-md-2">
+                      <button type="button" class="btn btn-sm btn-outline-success mt-4 nsjamb_plus" style="float: right;"><i class="bx bx-plus"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-warning mt-4 nsjamb_minus" style="float: right; margin-right: 8px;"><i class="bx bx-minus"></i></button>
+                    </div>
+                  </div>
+                  <div class="row nsjamb_div">
+                    <div class="col-md-6">
+                      <label class="form-label">Vazifa</label>
+                      <input type="text" name="nsjamb_job[]" class="form-control form-input" autocomplete="off">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Maosh</label>
+                      <input type="text" name="nsjamb_salary[]" class="form-control form-input" autocomplete="off">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row d-flex mt-4">
                 <div class="col-md-12 transom_content">
                   <div class="text-center text-primary display-6">Dobor tayyorlash uchun maosh tayinlash</div>
                   <div class="row">
@@ -91,6 +114,75 @@
                     <div class="col-md-6">
                       <label class="form-label">Maosh</label>
                       <input type="text" name="transom_salary[]" class="form-control form-input" autocomplete="off">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row d-flex mt-4">
+                <div class="col-md-12 crown_content">
+                  <div class="text-center text-primary display-6">Korona tayyorlash uchun maosh tayinlash</div>
+                  <div class="row">
+                    <div class="col-md-10"></div>
+                    <div class="col-md-2">
+                      <button type="button" class="btn btn-sm btn-outline-success mt-4 crown_plus" style="float: right;"><i class="bx bx-plus"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-warning mt-4 crown_minus" style="float: right; margin-right: 8px;"><i class="bx bx-minus"></i></button>
+                    </div>
+                  </div>
+                  <div class="row crown_div">
+                    <div class="col-md-6">
+                      <label class="form-label">Vazifa</label>
+                      <input type="text" name="crown_job[]" class="form-control form-input" autocomplete="off">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Maosh</label>
+                      <input type="text" name="crown_salary[]" class="form-control form-input" autocomplete="off">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row d-flex mt-4">
+                <div class="col-md-12 boot_content">
+                  <div class="text-center text-primary display-6">Sapog tayyorlash uchun maosh tayinlash</div>
+                  <div class="row">
+                    <div class="col-md-10"></div>
+                    <div class="col-md-2">
+                      <button type="button" class="btn btn-sm btn-outline-success mt-4 boot_plus" style="float: right;"><i class="bx bx-plus"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-warning mt-4 boot_minus" style="float: right; margin-right: 8px;"><i class="bx bx-minus"></i></button>
+                    </div>
+                  </div>
+                  <div class="row boot_div">
+                    <div class="col-md-6">
+                      <label class="form-label">Vazifa</label>
+                      <input type="text" name="boot_job[]" class="form-control form-input" autocomplete="off">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Maosh</label>
+                      <input type="text" name="boot_salary[]" class="form-control form-input" autocomplete="off">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row d-flex mt-4">
+                <div class="col-md-12 cube_content">
+                  <div class="text-center text-primary display-6">Kubik tayyorlash uchun maosh tayinlash</div>
+                  <div class="row">
+                    <div class="col-md-10"></div>
+                    <div class="col-md-2">
+                      <button type="button" class="btn btn-sm btn-outline-success mt-4 cube_plus" style="float: right;"><i class="bx bx-plus"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-warning mt-4 cube_minus" style="float: right; margin-right: 8px;"><i class="bx bx-minus"></i></button>
+                    </div>
+                  </div>
+                  <div class="row cube_div">
+                    <div class="col-md-6">
+                      <label class="form-label">Vazifa</label>
+                      <input type="text" name="cube_job[]" class="form-control form-input" autocomplete="off">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Maosh</label>
+                      <input type="text" name="cube_salary[]" class="form-control form-input" autocomplete="off">
                     </div>
                   </div>
                 </div>
@@ -120,12 +212,48 @@
             </div>
           </div>
 
+          <div class="row nsjamb_div_without_labels" style="display: none;">
+            <div class="col-md-6">
+              <input type="text" name="nsjamb_job[]" class="form-control form-input" autocomplete="off">
+            </div>
+            <div class="col-md-6">
+              <input type="text" name="nsjamb_salary[]" class="form-control form-input" autocomplete="off">
+            </div>
+          </div>
+
           <div class="row transom_div_without_labels" style="display: none;">
             <div class="col-md-6">
               <input type="text" name="transom_job[]" class="form-control form-input" autocomplete="off">
             </div>
             <div class="col-md-6">
               <input type="text" name="transom_salary[]" class="form-control form-input" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="row crown_div_without_labels" style="display: none;">
+            <div class="col-md-6">
+              <input type="text" name="crown_job[]" class="form-control form-input" autocomplete="off">
+            </div>
+            <div class="col-md-6">
+              <input type="text" name="crown_salary[]" class="form-control form-input" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="row boot_div_without_labels" style="display: none;">
+            <div class="col-md-6">
+              <input type="text" name="boot_job[]" class="form-control form-input" autocomplete="off">
+            </div>
+            <div class="col-md-6">
+              <input type="text" name="boot_salary[]" class="form-control form-input" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="row cube_div_without_labels" style="display: none;">
+            <div class="col-md-6">
+              <input type="text" name="cube_job[]" class="form-control form-input" autocomplete="off">
+            </div>
+            <div class="col-md-6">
+              <input type="text" name="cube_salary[]" class="form-control form-input" autocomplete="off">
             </div>
           </div>
 
@@ -172,7 +300,7 @@
             indexDrop = i;
           }
         }
-        console.log(index, indexDrop);
+
         if (index > indexDrop) {
           target.before(dragged);
         } else {
@@ -210,6 +338,20 @@
         }
       });
 
+      let o = 1;
+      $('body').on('click', '.nsjamb_plus', function(){
+        let targetDiv = document.getElementsByClassName("nsjamb_div_without_labels")[0];
+        $(".nsjamb_content").last().append('<div class="row nsjamb_div mt-3">'+targetDiv.innerHTML+'</div>');
+        o++;
+      });
+      $('body').on('click', '.nsjamb_minus', function(){
+        if(o>1){
+          let childDiv = $('body').find('.nsjamb_div').last();
+          childDiv.remove();
+          o--;
+        }
+      });
+
       let k = 1;
       $('body').on('click', '.transom_plus', function(){
         let targetDiv = document.getElementsByClassName("transom_div_without_labels")[0];
@@ -221,6 +363,48 @@
           let childDiv = $('body').find('.transom_div').last();
           childDiv.remove();
           k--;
+        }
+      });
+
+      let l = 1;
+      $('body').on('click', '.crown_plus', function(){
+        let targetDiv = document.getElementsByClassName("crown_div_without_labels")[0];
+        $(".crown_content").last().append('<div class="row crown_div mt-3">'+targetDiv.innerHTML+'</div>');
+        l++;
+      });
+      $('body').on('click', '.crown_minus', function(){
+        if(l>1){
+          let childDiv = $('body').find('.crown_div').last();
+          childDiv.remove();
+          l--;
+        }
+      });
+
+      let m = 1;
+      $('body').on('click', '.boot_plus', function(){
+        let targetDiv = document.getElementsByClassName("boot_div_without_labels")[0];
+        $(".boot_content").last().append('<div class="row boot_div mt-3">'+targetDiv.innerHTML+'</div>');
+        m++;
+      });
+      $('body').on('click', '.boot_minus', function(){
+        if(m>1){
+          let childDiv = $('body').find('.boot_div').last();
+          childDiv.remove();
+          m--;
+        }
+      });
+
+      let n = 1;
+      $('body').on('click', '.cube_plus', function(){
+        let targetDiv = document.getElementsByClassName("cube_div_without_labels")[0];
+        $(".cube_content").last().append('<div class="row cube_div mt-3">'+targetDiv.innerHTML+'</div>');
+        n++;
+      });
+      $('body').on('click', '.cube_minus', function(){
+        if(n>1){
+          let childDiv = $('body').find('.cube_div').last();
+          childDiv.remove();
+          n--;
         }
       });
     });

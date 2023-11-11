@@ -18,7 +18,12 @@ class Doortype extends Model
         'layer15_koeffitsient',
     ];
 
-    protected $hidden = ['retail_price', 'dealer_price', 'jobs', 'installation_price'];
+    protected $hidden = [
+        'retail_price', 
+        'dealer_price', 
+        'jobs', 
+        'installation_price'
+    ];
 
     public function getData($id)
     {

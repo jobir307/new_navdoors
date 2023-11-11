@@ -19,10 +19,17 @@ return new class extends Migration
             $table->integer('driver_id');
             $table->string('_from')->default('zavoddan');
             $table->string('_to');
-            $table->text('doortype')->nullable(); // id, name, count, size
-            $table->text('jamb')->nullable(); // id, name, count
-            $table->string('transom')->nullable(); // name, count, size
+            $table->text('doortype')->nullable();
+            $table->text('jamb')->nullable();
+            $table->text('nsjamb')->nullable();
+            $table->text('transom')->nullable();
+            $table->text('crown')->nullable();
+            $table->text('boot')->nullable();
+            $table->text('cube')->nullable();
             $table->date('day');
+            $table->string('product');
+            $table->text('details')->nullable();
+            $table->text('sended_details')->nullable();
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent();
         });

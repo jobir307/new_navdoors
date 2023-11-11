@@ -45,7 +45,7 @@ class GlassFigureController extends Controller
 
         $fileName = time() . '_' . $request->image->getClientOriginalName();  
        
-        $path = $request->image->move('uploads/', $fileName);        
+        $path = $request->image->move('uploads/', $fileName);
         
         GlassFigure::create([
             'name' => $request->name,

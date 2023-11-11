@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Hash;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -25,31 +26,28 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // dd(Hash::make($request->password));
         $request->authenticate();
 
         $request->session()->regenerate();        
         $role_id = Auth::user()->role_id;
-        switch ($role_id) {
-            case 1: // administrator
+        switch (true) {
+            case ($role_id == 1): // administrator
                 return redirect()->route('dashboard');
                 break;
-            // case 2: // omborxona mudiri
-            //     return redirect()->route('dashboard');
-            //     break;
-            case 3: // moderator (zavodda naryadlarni qabul qiladigan odam)
+            case ($role_id == 2): // omborxona mudiri
+                return redirect()->route('warehouse');
+                break;
+            case ($role_id == 3): // moderator (zavodda naryadlarni qabul qiladigan odam)
                 return redirect()->route('moderator');
                 break;
-            case 4: // sotuv manageri
+            case ($role_id == 4 || $role_id == 8): // sotuv manageri
                 return redirect()->route('orders');
                 break;
-            /*case 5: // boshliq
-                return redirect()->route('chief');
-                break;
-            */
-            case 6: // kassir
+            case ($role_id == 6): // kassir
                 return redirect()->route('cashier', date('Y-m-d'));
                 break;
-            case 7: // buxgalter
+            case ($role_id == 7): // buxgalter
                 return redirect()->route('accountant');
                 break;
             default:

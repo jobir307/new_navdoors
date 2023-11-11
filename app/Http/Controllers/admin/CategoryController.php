@@ -17,8 +17,9 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::all();
+        $parent_categories = DB::select('SELECT id, name FROM categories WHERE parent_id=0 ORDER BY name');
 
-        return view('admin.category.index', compact('categories'));
+        return view('admin.category.index', compact('categories', 'parent_categories'));
     }
 
     /**
@@ -39,12 +40,14 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->parent_id);
         $request->validate([
             'name' => 'required|min:3|max:200'
         ]);
 
         Category::create([
-            'name' => $request->name
+            'name'      => $request->name,
+            'parent_id' => $request->parent_id
         ]);
 
         return redirect()->route('categories.index');
@@ -71,7 +74,9 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
 
-        return view('admin.category.index', compact('category'));
+        $parent_categories = DB::select('SELECT id, name FROM categories WHERE parent_id=0 ORDER BY name');
+
+        return view('admin.category.index', compact('category', 'parent_categories'));
     }
 
     /**
@@ -88,7 +93,8 @@ class CategoryController extends Controller
         ]);
 
         Category::where('id', $id)->update([
-            'name' => $request->name
+            'name'      => $request->name,
+            'parent_id' => $request->parent_id
         ]);
         
         return redirect()->route('categories.index');

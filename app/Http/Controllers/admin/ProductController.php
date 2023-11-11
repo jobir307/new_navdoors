@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
@@ -16,9 +17,13 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::all();
+        $products = DB::select('SELECT a.id, a.name, b.name AS category 
+                                FROM products a
+                                INNER JOIN categories b ON a.category_id=b.id');
 
-        return view('admin.product.index', compact('products'));
+        $categories = Category::all();
+
+        return view('admin.product.index', compact('products', 'categories'));
     }
 
     /**
@@ -39,7 +44,16 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required'
+        ]);
+
+        Product::create([
+            'category_id' => $request->category_id,
+            'name' => $request->name
+        ]);
+
+        return redirect()->route('products.index');
     }
 
     /**
@@ -61,7 +75,10 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        //
+        $product = Product::find($id);
+        $categories = Category::all();
+
+        return view('admin.product.index', compact('product', 'categories'));
     }
 
     /**
@@ -73,7 +90,16 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'required'
+        ]);
+
+        Product::where('id', $id)->update([
+            'category_id' => $request->category_id,
+            'name' => $request->name
+        ]);
+
+        return redirect()->route('products.index');
     }
 
     /**
@@ -84,6 +110,8 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Product::destroy($id);
+
+        return redirect()->route('products.index');
     }
 }

@@ -15,7 +15,14 @@ class OutsController extends Controller
     {
         $inout_types = DB::select('SELECT id, name FROM inout_types WHERE action=-1');
         $payment_types = DB::select('SELECT id, name FROM payment_types');
-        $outs = DB::select('SELECT a.id, b.name AS payment_type, a.amount, c.day, c.payer, c.responsible, c.reason, a.in_words
+        $outs = DB::select('SELECT a.id, 
+                                   b.name AS payment_type, 
+                                   a.amount, 
+                                   c.day, 
+                                   c.payer, 
+                                   c.responsible, 
+                                   c.reason, 
+                                   a.in_words
                             FROM (stocks a, payment_types b)
                             INNER JOIN invoices c ON a.invoice_id=c.id
                             WHERE a.inout_type=? AND a.payment_type=b.id AND c.status=1

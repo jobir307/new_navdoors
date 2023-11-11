@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('jamb_results', function (Blueprint $table) {
             $table->id();
             $table->integer('order_id');
+            $table->integer('jamb_id');
             $table->string('jamb_color');
             $table->string('name');
             $table->integer('count');

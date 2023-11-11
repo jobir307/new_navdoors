@@ -18,13 +18,33 @@
     <ul class="navbar-nav flex-row align-items-center ms-auto">
       <?php 
         $first_segment = [];
-        $first_segment = ['moderator-home', 'form-outfit'];
+        $first_segment = ['moderator-glass-figures'];
+        $active = "";
+        if (in_array(Request::segment(1), $first_segment))
+          $active = "active";
+      ?>
+      <li class="nav-item">
+        <a class="nav-link {{ $active }}" href="{{ route('moderator-glass-figures') }}">Shisha shakllari</a>
+      </li>
+      <?php 
+        $first_segment = [];
+        $first_segment = ['moderator-home', 'form-outfit', 'order-show', 'moderator-waybill-show'];
         $active = "";
         if (in_array(Request::segment(1), $first_segment))
           $active = "active";
       ?>
       <li class="nav-item">
         <a class="nav-link {{ $active }}" href="{{ route('moderator') }}">Naryadlar</a>
+      </li>
+      <?php 
+        $first_segment = [];
+        $first_segment = ['workers-list', 'worker-salaries', 'show-stock-details'];
+        $active = "";
+        if (in_array(Request::segment(1), $first_segment))
+          $active = "active";
+      ?>
+      <li class="nav-item">
+        <a class="nav-link {{ $active }}" href="{{ route('moderator-workers') }}">Ish haqi</a>
       </li>
       <?php 
         $first_segment = [];

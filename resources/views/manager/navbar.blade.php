@@ -18,7 +18,27 @@
     <ul class="navbar-nav flex-row align-items-center ms-auto">
       <?php 
         $first_segment = [];
-        $first_segment = ['order-doors', 'order-jambs', 'order-transoms', 'order-jambs-transoms', 'orders'];
+        $first_segment = ['manager-glasses'];
+        $active = "";
+        if (in_array(Request::segment(1), $first_segment))
+          $active = "active";
+      ?>
+      <li class="nav-item">
+        <a class="nav-link {{ $active }}" href="{{ route('manager-glasses') }}">Shishalar</a>
+      </li>
+      <?php 
+        $first_segment = [];
+        $first_segment = ['manager-doors'];
+        $active = "";
+        if (in_array(Request::segment(1), $first_segment))
+          $active = "active";
+      ?>
+      <li class="nav-item">
+        <a class="nav-link {{ $active }}" href="{{ route('manager-doors') }}">Eshik turlari</a>
+      </li>
+      <?php 
+        $first_segment = [];
+        $first_segment = ['order-doors', 'order-jambs', 'order-nsjambs', 'order-transoms', 'order-jambs-transoms', 'order-ccbjs', 'orders'];
         $active = "";
         if (in_array(Request::segment(1), $first_segment))
           $active = "active";
@@ -33,9 +53,11 @@
         if (in_array(Request::segment(1), $first_segment))
           $active = "active";
       ?>
-      <li class="nav-item">
-        <a class="nav-link {{ $active }}" href="{{ route('manager-customers.index') }}">Xaridorlar</a>
-      </li>
+      @if (in_array(Auth::user()->role_id, array(1,4)))
+        <li class="nav-item">
+          <a class="nav-link {{ $active }}" href="{{ route('manager-customers.index') }}">Xaridorlar</a>
+        </li>
+      @endif
       <li class="nav-item navbar-dropdown dropdown-user dropdown">
         <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
             {{ Auth::user()->username }}

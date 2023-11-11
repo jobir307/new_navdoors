@@ -23,7 +23,16 @@
               <div class="row">
                 <div class="mb-3 col-md-2">
                   <label for="name" class="form-label">Mahsulot nomi</label>
-                  <input class="form-control" type="text" id="name" name="name" autofocus autocomplete="off" value="{{ $transom->name ?? ''  }}" />
+                  <select name="name" id="name" class="form-select">
+                    <option></option>
+                    @foreach($transomnames as $key => $value)
+                      @if (isset($transom) && $transom->name == $value->name)
+                        <option value="{{ $value->name }}" selected>{{ $value->name }}</option>
+                      @else
+                        <option value="{{ $value->name }}">{{ $value->name }}</option>
+                      @endif
+                    @endforeach
+                  </select>
                 </div>
                 <div class="mb-3 col-md-2">
                   <label for="doortype_id" class="form-label">Eshik turi</label>
@@ -89,6 +98,15 @@
                       <th class="text-center">Narxi(xaridor uchun)</th>
                       <th class="text-center">Ustanovka narxi</th>
                       <th style="width: 140px;"></th>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Nomi"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Eshik turi"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Narxi(diler uchun)"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Narxi(xaridor uchun)"></td>
+                      <td><input class="form-control form-control-sm" type="text" placeholder="Ustanovka narxi"></td>
+                      <td></td>
                     </tr>
                   </thead>
                   <tbody>
@@ -207,9 +225,17 @@
         $(".delete_form").attr("action", "transoms/" + id);
       });
 
-      $("#transom_table").DataTable({
-        "dom": 'rtp',
+      let table_confirmed = $('#transom_table').DataTable({
+        dom: 'Qlrtp',
         "ordering": false
+      });
+      table_confirmed.columns().every( function () {
+        let column = this;
+        $( 'input', this.header() ).on( 'keyup change', function () {
+            column
+                .search( this.value )
+                .draw();
+        });
       });
     });
   </script>

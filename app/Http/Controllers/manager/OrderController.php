@@ -15,77 +15,271 @@ class OrderController extends Controller
 {
     public function index() 
     {
-        $confirmed_orders = DB::select('SELECT a.id, 
-                                               a.phone_number, 
-                                               a.contract_number, 
-                                               a.contract_price, 
-                                               a.last_contract_price,
-                                               a.installation_price, 
-                                               a.courier_price,
-                                               a.deadline, 
-                                               b.name as customer,
-                                               (SELECT SUM(amount)
-                                                FROM stocks
-                                                WHERE invoice_id=i.id
-                                                GROUP BY invoice_id
-                                               ) AS paid,
-                                               j.name as process,
-                                               CASE
-                                                    WHEN a.product = "door" THEN "Eshik"
-                                                    WHEN a.product = "jamb" THEN "Nalichnik"
-                                                    WHEN a.product = "transom" THEN "Dobor"
-                                                    ELSE "Nalichnik+dobor"
-                                               END AS product
-                                        FROM (orders a, customers b)
-                                        LEFT JOIN invoices i ON a.id=i.order_id
-                                        LEFT JOIN jobs j ON j.id=a.job_id
-                                        WHERE a.customer_id=b.id AND i.status=1
-                                        ORDER BY a.created_at DESC');
+        if (Auth::user()->role_id == 8){ // diler
+            $confirmed_orders = DB::select('SELECT a.id, 
+                                                    a.phone_number, 
+                                                    a.contract_number, 
+                                                    a.contract_price, 
+                                                    a.last_contract_price,
+                                                    a.installation_price, 
+                                                    a.courier_price,
+                                                    a.manager_verified_time AS verified_time,
+                                                    a.deadline, 
+                                                    a.created_at AS when_created,
+                                                    b.name AS customer,
+                                                    (SELECT SUM(amount)
+                                                        FROM stocks
+                                                        WHERE invoice_id=i.id
+                                                        GROUP BY invoice_id
+                                                    ) AS paid,
+                                                    a.job_name AS process,
+                                                    CASE
+                                                        WHEN a.product = "door" THEN "Eshik"
+                                                        WHEN a.product = "jamb" THEN "Nalichnik"
+                                                        WHEN a.product = "nsjamb" THEN "NS nalichnik"
+                                                        WHEN a.product = "transom" THEN "Dobor"
+                                                        WHEN a.product = "jamb+transom" THEN "Nalichnik+dobor"
+                                                        ELSE "NKKS"
+                                                    END AS product,
+                                                    a.who_created_username
+                                            FROM (orders a, customers b)
+                                            LEFT JOIN invoices i ON a.id=i.order_id
+                                            WHERE a.customer_id=b.id AND i.status=1 AND a.moderator_send=0 AND (a.who_created_userid=? OR a.customer_id=?)
+                                            ORDER BY a.created_at DESC', [Auth::user()->id, Auth::user()->dealer_id]);
 
-        $not_confirmed_orders = DB::select('SELECT a.id, 
+            $not_confirmed_orders = DB::select('SELECT a.id, 
+                                                        a.phone_number, 
+                                                        a.contract_number, 
+                                                        a.contract_price, 
+                                                        a.installation_price, 
+                                                        a.courier_price,
+                                                        a.deadline, 
+                                                        a.created_at AS when_created,
+                                                        b.name as customer,
+                                                        CASE
+                                                            WHEN a.product = "door" THEN "Eshik"
+                                                            WHEN a.product = "jamb" THEN "Nalichnik"
+                                                            WHEN a.product = "nsjamb" THEN "NS nalichnik"
+                                                            WHEN a.product = "transom" THEN "Dobor"
+                                                            WHEN a.product = "jamb+transom" THEN "Nalichnik+dobor"
+                                                            ELSE "NKKS"
+                                                        END AS product,
+                                                        a.who_created_username,
+                                                        a.who_created_userid
+                                                FROM (orders a, customers b)
+                                                LEFT JOIN invoices i ON a.id=i.order_id
+                                                WHERE a.customer_id=b.id AND 
+                                                      i.status=0 AND 
+                                                      (a.who_created_userid=? OR a.customer_id=?)
+                                                ORDER BY a.created_at DESC', [Auth::user()->id, Auth::user()->dealer_id]);
+
+            $completed_orders = DB::select('SELECT a.id, 
+                                                    a.phone_number, 
+                                                    a.contract_number, 
+                                                    a.contract_price, 
+                                                    a.last_contract_price,
+                                                    (SELECT SUM(amount)
+                                                        FROM stocks
+                                                        WHERE invoice_id=i.id
+                                                        GROUP BY invoice_id
+                                                    ) AS paid,
+                                                    a.deadline, 
+                                                    a.moderator_send_time AS send_time,
+                                                    b.name AS customer,
+                                                    a.job_name,
+                                                    a.created_at AS when_created,
+                                                    a.moderator_send_time,
+                                                    CASE
+                                                        WHEN a.product = "door" THEN "Eshik"
+                                                        WHEN a.product = "jamb" THEN "Nalichnik"
+                                                        WHEN a.product = "nsjamb" THEN "NS nalichnik"
+                                                        WHEN a.product = "transom" THEN "Dobor"
+                                                        WHEN a.product = "jamb+transom" THEN "Nalichnik+dobor"
+                                                        ELSE "NKKS"
+                                                    END AS product,
+                                                    a.who_created_username
+                                            FROM (orders a, customers b)
+                                            LEFT JOIN invoices i ON a.id=i.order_id
+                                            WHERE a.customer_id=b.id AND 
+                                                  a.moderator_receive=1 AND 
+                                                  a.moderator_send=1 AND 
+                                                  a.manager_status=1 AND 
+                                                  i.status=1 AND 
+                                                  (a.who_created_userid=? OR a.customer_id=?)
+                                            ORDER BY a.moderator_send_time DESC',[Auth::user()->id, Auth::user()->dealer_id]);
+            $all_orders = DB::select('SELECT a.id, 
+                                             a.phone_number, 
+                                             a.contract_number, 
+                                             a.contract_price, 
+                                             a.last_contract_price,
+                                             a.installation_price, 
+                                             a.courier_price,
+                                             a.manager_verified_time AS verified_time,
+                                             a.deadline, 
+                                             a.created_at AS when_created,
+                                             b.name AS customer,
+                                             (SELECT SUM(amount)
+                                              FROM stocks
+                                              WHERE invoice_id=i.id
+                                              GROUP BY invoice_id
+                                             ) AS paid,
+                                             a.job_name AS process,
+                                             CASE
+                                                WHEN a.product = "door" THEN "Eshik"
+                                                WHEN a.product = "jamb" THEN "Nalichnik"
+                                                WHEN a.product = "nsjamb" THEN "NS nalichnik"
+                                                WHEN a.product = "transom" THEN "Dobor"
+                                                WHEN a.product = "jamb+transom" THEN "Nalichnik+dobor"
+                                                ELSE "NKKS"
+                                             END AS product,
+                                             a.who_created_username
+                                      FROM (orders a, customers b)
+                                      LEFT JOIN invoices i ON a.id=i.order_id
+                                      WHERE a.customer_id=b.id AND (a.who_created_userid=? OR a.customer_id=?)
+                                     ORDER BY a.created_at DESC', [Auth::user()->id, Auth::user()->dealer_id]);       
+            
+        } else {
+            $confirmed_orders = DB::select('SELECT a.id, 
+                                                    a.phone_number, 
+                                                    a.contract_number, 
+                                                    a.contract_price, 
+                                                    a.last_contract_price,
+                                                    a.installation_price, 
+                                                    a.courier_price,
+                                                    a.manager_verified_time AS verified_time,
+                                                    a.deadline, 
+                                                    a.created_at AS when_created,
+                                                    b.name AS customer,
+                                                    a.job_name AS process,
+                                                    (SELECT SUM(amount)
+                                                        FROM stocks
+                                                        WHERE invoice_id=i.id
+                                                        GROUP BY invoice_id
+                                                    ) AS paid,
+                                                    CASE
+                                                        WHEN a.product = "door" THEN "Eshik"
+                                                        WHEN a.product = "jamb" THEN "Nalichnik"
+                                                        WHEN a.product = "nsjamb" THEN "NS nalichnik"
+                                                        WHEN a.product = "transom" THEN "Dobor"
+                                                        WHEN a.product = "jamb+transom" THEN "Nalichnik+dobor"
+                                                        ELSE "NKKS"
+                                                    END AS product,
+                                                    a.who_created_username
+                                            FROM (orders a, customers b)
+                                            LEFT JOIN invoices i ON a.id=i.order_id
+                                            WHERE a.customer_id=b.id AND 
+                                                  i.status=1 AND 
+                                                  a.moderator_send=0
+                                            ORDER BY a.created_at DESC');
+
+            $not_confirmed_orders = DB::select('SELECT a.id, 
+                                                    a.phone_number, 
+                                                    a.contract_number, 
+                                                    a.contract_price, 
+                                                    a.installation_price, 
+                                                    a.courier_price,
+                                                    a.deadline, 
+                                                    a.created_at AS when_created,
+                                                    b.name as customer,
+                                                    CASE
+                                                        WHEN a.product = "door" THEN "Eshik"
+                                                        WHEN a.product = "jamb" THEN "Nalichnik"
+                                                        WHEN a.product = "nsjamb" THEN "NS nalichnik"
+                                                        WHEN a.product = "transom" THEN "Dobor"
+                                                        WHEN a.product = "jamb+transom" THEN "Nalichnik+dobor"
+                                                        ELSE "NKKS"
+                                                    END AS product,
+                                                    a.who_created_username,
+                                                    a.who_created_userid
+                                                FROM (orders a, customers b)
+                                                LEFT JOIN invoices i ON a.id=i.order_id
+                                                WHERE a.customer_id=b.id AND 
+                                                      i.status=0
+                                                ORDER BY a.created_at DESC');
+
+            $completed_orders = DB::select('SELECT a.id, 
                                                    a.phone_number, 
                                                    a.contract_number, 
                                                    a.contract_price, 
-                                                   a.installation_price, 
-                                                   a.courier_price,
+                                                   a.last_contract_price,
+                                                   (SELECT SUM(amount)
+                                                    FROM stocks
+                                                    WHERE invoice_id=i.id
+                                                    GROUP BY invoice_id
+                                                   ) AS paid,
                                                    a.deadline, 
-                                                   b.name as customer,
+                                                   a.moderator_send_time AS send_time,
+                                                   b.name AS customer,
+                                                   a.job_name,
+                                                   a.created_at AS when_created,
+                                                   a.moderator_send_time,
                                                    CASE
                                                         WHEN a.product = "door" THEN "Eshik"
                                                         WHEN a.product = "jamb" THEN "Nalichnik"
+                                                        WHEN a.product = "nsjamb" THEN "NS nalichnik"
                                                         WHEN a.product = "transom" THEN "Dobor"
-                                                        ELSE "Nalichnik+dobor"
-                                                   END AS product
+                                                        WHEN a.product = "jamb+transom" THEN "Nalichnik+dobor"
+                                                        ELSE "NKKS"
+                                                   END AS product,
+                                                   a.who_created_username
                                             FROM (orders a, customers b)
                                             LEFT JOIN invoices i ON a.id=i.order_id
-                                            WHERE a.customer_id=b.id AND i.status=0
-                                            ORDER BY a.created_at DESC');
+                                            WHERE a.customer_id=b.id AND 
+                                                  a.moderator_receive=1 AND 
+                                                  a.moderator_send=1 AND 
+                                                  a.manager_status=1 AND 
+                                                  i.status=1
+                                            ORDER BY a.moderator_send_time DESC');
+            $all_orders = DB::select('SELECT a.id, 
+                                             a.phone_number, 
+                                             a.contract_number, 
+                                             a.contract_price, 
+                                             a.last_contract_price,
+                                             (SELECT SUM(amount)
+                                              FROM stocks
+                                              WHERE invoice_id=i.id
+                                              GROUP BY invoice_id
+                                             ) AS paid,
+                                             a.deadline, 
+                                             a.moderator_send_time AS send_time,
+                                             b.name AS customer,
+                                             a.job_name,
+                                             a.created_at AS when_created,
+                                             a.moderator_send_time,
+                                             CASE
+                                                WHEN a.product = "door" THEN "Eshik"
+                                                WHEN a.product = "jamb" THEN "Nalichnik"
+                                                WHEN a.product = "nsjamb" THEN "NS nalichnik"
+                                                WHEN a.product = "transom" THEN "Dobor"
+                                                WHEN a.product = "jamb+transom" THEN "Nalichnik+dobor"
+                                                ELSE "NKKS"
+                                             END AS product,
+                                             a.who_created_username,
+                                             a.who_created_userid
+                                      FROM (orders a, customers b)
+                                      LEFT JOIN invoices i ON a.id=i.order_id
+                                      WHERE a.customer_id=b.id
+                                      ORDER BY a.created_at DESC');
+        }
         
-        return view('manager.order.index', compact('confirmed_orders', 'not_confirmed_orders'));
+        return view('manager.order.index', compact('confirmed_orders', 'not_confirmed_orders', 'completed_orders', 'all_orders'));
     }
+
     public function confirm_invoice(Request $request)
     {
         $order = Order::find($request->order_id);
 
-        // dd($order);
         $order->rebate_percent = $request->rebate_percent;
+        $order->manager_verified_time = date('Y-m-d H:i:s');
         $order->last_contract_price = ($order->contract_price - $order->installation_price - $order->courier_price) * (100 - $request->rebate_percent) / 100 + $order->installation_price + $order->courier_price; 
         $order->save();
         
         Invoice::where('order_id', $request->order_id)->update([
-            'status' => 1
+            'status' => 1,
+            'amount' => $order->last_contract_price
         ]);
 
         return redirect()->route('orders');
-    }
-
-    public function jamb_by_doortype(Request $request)
-    {
-        $jambs = Jamb::where('doortype_id', $request->doortype_id)->get();
-
-        return response()->json([
-            'jambs' => $jambs
-        ]);
     }
 
     public function glass_types(Request $request)
@@ -99,4 +293,27 @@ class OrderController extends Controller
         ]);
     }
 
+    public function set_new_order_price(Request $request) // that's for only administrator !!!
+    {
+        Order::where('id', $request->order_id)->update([
+            'last_contract_price' => $request->last_contract_price,
+            'rebate_percent' => 0,
+            'manager_verified_time' => date('Y-m-d H:i:s')
+        ]);
+
+        Invoice::where('order_id', $request->order_id)->update([
+            'amount' => $request->last_contract_price,
+            'status' => 1
+        ]);
+
+        return redirect()->route('orders');
+    }
+
+    public function delete(Request $request)
+    {
+        $order = Order::find($request->order_id);
+        $order->delete();
+
+        return redirect()->route('orders');
+    }
 }

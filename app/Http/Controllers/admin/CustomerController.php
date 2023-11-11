@@ -16,7 +16,10 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = DB::select('SELECT * FROM customers ORDER BY type, created_at DESC');
+        $customers = DB::select('SELECT a.*, 
+                                        (SELECT COUNT(*) FROM orders WHERE customer_id=a.id) AS shopping_count
+                                 FROM customers a 
+                                 ORDER BY a.type, shopping_count');
         
         return view('admin.customer.index', compact('customers'));
     }

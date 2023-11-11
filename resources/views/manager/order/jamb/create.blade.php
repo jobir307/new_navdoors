@@ -1,7 +1,7 @@
 @extends('layouts.manager')
 @section('content')
   <div class="container-fluid flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><a href="{{ route('orders') }}" class="fw-light">Shartnomalar / </a><span class="text-muted fw-light">Yangi shartnoma yaratish</h4>
+    <h4 class="fw-bold py-3 mb-4"><a href="{{ route('orders') }}" class="fw-light">Shartnomalar / </a><span class="fw-light">Yangi shartnoma yaratish(nalichnik)</h4>
     <div class="row">
       <div class="col-md-12">
         <div class="card mb-4">
@@ -9,45 +9,62 @@
             @csrf
             <div class="card-body jambs_content">
               <div class="row">
-                <div class="mb-3 col-md-1 mt-2">
-                  <div class="form-check mt-3">
-                    <input
-                      name="customer_radio"
-                      class="form-check-input customerRadio"
-                      type="radio"
-                      value="customer"
-                      id="customerRadio"
-                      checked
-                    />
-                    <label class="form-check-label" for="customerRadio"> Xaridor </label>
+                @if (Auth::user()->role_id != 8)
+                  <div class="mb-3 col-md-1 mt-2">
+                    <div class="form-check mt-3">
+                      <input
+                        name="customer_radio"
+                        class="form-check-input customerRadio"
+                        type="radio"
+                        value="customer"
+                        id="customerRadio"
+                        checked
+                      />
+                      <label class="form-check-label" for="customerRadio"> Xaridor </label>
+                    </div>
+                    <div class="form-check">
+                      <input
+                        name="customer_radio"
+                        class="form-check-input customerRadio"
+                        type="radio"
+                        value="dealer"
+                        id="dealerRadio"
+                      />
+                      <label class="form-check-label" for="dealerRadio"> Diler </label>
+                    </div>
                   </div>
-                  <div class="form-check">
-                    <input
-                      name="customer_radio"
-                      class="form-check-input customerRadio"
-                      type="radio"
-                      value="dealer"
-                      id="dealerRadio"
-                    />
-                    <label class="form-check-label" for="dealerRadio"> Diler </label>
+                @endif
+                @if (Auth::user()->role_id == 8)
+                  <div class="mb-3 col-md-4 dealer_div" style="display:block;">
+                    <label for="diler" class="form-label">Diler</label><span style="color: red; font-size: 20px;">*</span>
+                    <select class="form-control js-example-basic-single" id="diler" name="dealer" style="width: 100%;" disabled>
+                      @foreach($dealers as $key => $value)
+                        @if (Auth::user()->dealer_id == $value->id)
+                          <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                        @else
+                          <option value="{{ $value->id }}">{{ $value->name }}</option>
+                        @endif
+                      @endforeach
+                    </select>
                   </div>
-                </div>
-                <div class="mb-3 col-md-3 dealer_div" style="display: none;">
-                  <label for="diler" class="form-label">Diler</label><span style="color: red; font-size: 20px;">*</span>
-                  <select class="form-control js-example-basic-single" id="diler" name="dealer" style="width: 100%;">
-                    @foreach($dealers as $key => $value)
-                      <option value="{{ $value->id }}">{{ $value->name }}</option>
-                    @endforeach
-                  </select>
-                </div>
-                <div class="mb-3 col-md-3 customer_div">
-                  <label for="diler" class="form-label">Xaridor</label><span style="color: red; font-size: 20px;">*</span>
-                  <select class="form-select js-example-basic-single" name="customer">
-                    @foreach($customers as $key => $value)
-                      <option value="{{ $value->id }}">{{ $value->name }}</option>
-                    @endforeach
-                  </select>
-                </div>
+                @else
+                  <div class="mb-3 col-md-3 dealer_div" style="display:none;">
+                    <label for="diler" class="form-label">Diler</label><span style="color: red; font-size: 20px;">*</span>
+                    <select class="form-control js-example-basic-single" id="diler" name="dealer" style="width: 100%;">
+                      @foreach($dealers as $key => $value)
+                        <option value="{{ $value->id }}">{{ $value->name }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                  <div class="mb-3 col-md-3 customer_div">
+                    <label for="diler" class="form-label">Xaridor</label><span style="color: red; font-size: 20px;">*</span>
+                    <select class="form-select js-example-basic-single" name="customer">
+                      @foreach($customers as $key => $value)
+                        <option value="{{ $value->id }}">{{ $value->name }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                @endif
                 <div class="mb-3 col-md-2">
                   <label for="contract_number" class="form-label">Shartnoma raqami</label><span style="color: red; font-size: 20px;">*</span>
                   <input class="form-control" type="text" name="contract_number" id="contract_number" autocomplete="off">
@@ -87,7 +104,7 @@
                     <select class="form-select" name="jamb_id[]" id="jamb">
                         <option value=""></option>
                         @foreach($jambs as $key => $value)
-                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                            <option value="{{ $value->id }}">{{ $value->name }}({{ $value->height }}x{{ $value->width }})</option>
                         @endforeach
                     </select>
                 </div>
@@ -97,9 +114,14 @@
                 </div>
               </div>
             </div>
-            <div class="card-footer float-end">
-              <div class="mt-2">
-                <button type="submit" class="btn btn-primary me-2">Saqlash</button>
+            <div class="card-footer">
+              <div class="row">
+                <div class="col-md-10">
+                  <textarea name="comments" class="form-control" rows="10" placeholder="Izoh qoldiring..."></textarea>
+                </div>
+                <div class="col-md-2">
+                  <button type="submit" class="btn btn-primary me-2 float-end">Saqlash</button>
+                </div>  
               </div>
             </div>
           </form>
@@ -111,7 +133,7 @@
                 <select class="form-select" name="jamb_id[]" id="depth">
                     <option value=""></option>
                     @foreach($jambs as $key => $value)
-                        <option value="{{ $value->id }}">{{ $value->name }}</option>
+                        <option value="{{ $value->id }}">{{ $value->name }}({{ $value->height }}x{{ $value->width }})</option>
                     @endforeach
                 </select>
             </div>

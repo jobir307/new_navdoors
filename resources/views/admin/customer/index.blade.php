@@ -7,6 +7,7 @@
 </style>
 @section('content')
   <div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><a href="{{ route('dashboard') }}" class="fw-light">Asosiy / </a>Buyurtmachilar </h4>
     <div class="row">
       <div class="col-md-12">
         <div class="card mb-4">
@@ -27,9 +28,9 @@
                 <div class="mb-3 col-md-2">
                   <label for="type" class="form-label">Turi</label>
                   <?php  
-                    $types = ['Xaridor', 'Diler']; 
+                    $types = ['Xaridor', 'Diler', "Yuridik"]; 
                   ?>
-                  <select class="form-select" name="type" id="type">
+                  <select class="form-select customer_type" name="type" id="type">
                     @foreach($types as $value)
                       @if (isset($customer) && $customer->type == $value)
                         <option value="{{ $value }}" selected>{{ $value }}</option>
@@ -47,7 +48,7 @@
                   <label for="address" class="form-label">Manzili</label>
                   <input class="form-control" type="text" name="address" id="address" autocomplete="off" value="{{ $customer->address ?? ''  }}" />
                 </div>
-                <div class="mb-3 col-md-2">
+                <div class="mb-3 col-md-2 inn_div" style="display:none;">
                   <label for="inn" class="form-label">INN</label>
                   <input class="form-control" type="text" name="inn" id="inn" autocomplete="off" value="{{ $customer->inn ?? ''  }}" />
                 </div>
@@ -158,6 +159,14 @@
       $("#customer_table").DataTable({
         "dom": 'rtp',
         "ordering": false
+      });
+
+      $('body').on('change', ".customer_type", function(){
+        let val = $(this).val();
+        if (val == "Yuridik")
+          $("div.inn_div").css("display", "block");
+        else
+          $("div.inn_div").css("display", "none");
       });
     });
   </script>

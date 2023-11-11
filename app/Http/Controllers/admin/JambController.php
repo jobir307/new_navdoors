@@ -17,20 +17,11 @@ class JambController extends Controller
      */
     public function index()
     {
-        $jambs = DB::select('SELECT a.id,
-                                    a.doortype_id,
-                                    b.name doortype,
-                                    a.name,
-                                    a.dealer_price,
-                                    a.retail_price
-                             FROM jambs a, doortypes b 
-                             WHERE a.doortype_id=b.id');
-
+        $jambs = DB::select('SELECT * FROM jambs');
         $jobs = DB::table('jobs')->get();
+        $jambnames = DB::select('SELECT id, name FROM jamb_names ORDER BY name');
 
-        $doortypes = DB::select('SELECT id, name FROM doortypes ORDER BY name');
-
-        return view('admin.jamb.index', compact('jambs', 'jobs', 'doortypes'));
+        return view('admin.jamb.index', compact('jambs', 'jobs', 'jambnames'));
     }
 
     /**
@@ -55,14 +46,19 @@ class JambController extends Controller
         if ($request->jobs){ 
             $jobs = implode(",", $request->jobs);
         }
-
-        Jamb::create([
-            'doortype_id'  => $request->doortype_id,
-            'name'         => $request->name,
-            'dealer_price' => $request->dealer_price,
-            'retail_price' => $request->retail_price,
-            'jobs'         => $jobs
-        ]);
+        
+        for ($i = 0; $i < count($request->height); $i++) {
+            if (!empty($request['height'][$i]) && !empty($request['width'][$i])  && !empty($request['retail_price'][$i]) && !empty($request['dealer_price'][$i])) {
+                Jamb::create([
+                    'height'       => $request['height'][$i],
+                    'width'        => $request['width'][$i],
+                    'name'         => $request->name,
+                    'dealer_price' => $request['dealer_price'][$i],
+                    'retail_price' => $request['retail_price'][$i],
+                    'jobs'         => $jobs
+                ]);
+            }
+        }
 
         return redirect()->route('jambs.index');
     }
@@ -84,15 +80,30 @@ class JambController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Jamb $jamb)
+    public function edit($id)
     {
         $jobs = DB::table('jobs')->get(['id', 'name'])->toArray();
-
+        $result = array_column($jobs, 'id', 'name');
+        $jamb = Jamb::find($id);
         $jamb_jobs = explode(",", $jamb->jobs);
+        $jambnames = DB::select('SELECT id, name FROM jamb_names ORDER BY name');
         
-        $doortypes = DB::select('SELECT id, name FROM doortypes ORDER BY name');
+        $diff_array = array_diff($result, $jamb_jobs);
+        $in_array = [];
+        foreach($jamb_jobs as $key => $value) {
+            foreach($jobs as $k => $v) {
+                if ($v->id == $value) { 
+                    $arr = array(
+                        'id' => $v->id,
+                        'name' => $v->name
+                    );
+                    array_push($in_array, $arr);
+                }
+            }
 
-        return view('admin.jamb.index', compact('jamb', 'doortypes', 'jobs', 'jamb_jobs'));
+        }
+
+        return view('admin.jamb.index', compact('jamb', 'jobs', 'diff_array', 'in_array', 'jambnames'));
     }
 
     /**
@@ -102,15 +113,18 @@ class JambController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Jamb $jamb)
+    public function update(Request $request, $id)
     {
         $jobs = "";
         if ($request->jobs){ 
             $jobs = implode(",", $request->jobs);
         }
         
+        $jamb = Jamb::find($id);
+
         $jamb->update([
-            'doortype_id'  => $request->doortype_id,
+            'height'       => $request->height,
+            'width'        => $request->width,
             'name'         => $request->name,
             'dealer_price' => $request->dealer_price,
             'retail_price' => $request->retail_price,
@@ -126,8 +140,9 @@ class JambController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Jamb $jamb)
+    public function destroy($id)
     {
+        $jamb = Jamb::find($id);
         $jamb->delete();
         
         return redirect()->route('jambs.index');

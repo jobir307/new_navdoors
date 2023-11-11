@@ -41,10 +41,10 @@
                         <label for="jobs{{ $value['id'] }}" class="form-check-label" style="margin-left: 10px">{{ $value['name'] }}</label>
                       </li>
                     @endforeach
-                    @foreach($not_in_array as $key => $value)
+                    @foreach($diff_array as $name => $id)
                       <li draggable="true" id="{{ $key }}" class="dropzone" style="padding:15px; border:1px solid #696CFF; margin-bottom:3px;">
-                        <input class="form-check-input" type="checkbox" name="jobs[]" id="jobs{{ $value['id'] }}" value="{{ $value['id'] }}" />
-                        <label for="jobs{{ $value['id'] }}" class="form-check-label" style="margin-left: 10px">{{ $value['name'] }}</label>
+                        <input class="form-check-input" type="checkbox" name="jobs[]" id="jobs{{ $id }}" value="{{ $id }}" />
+                        <label for="jobs{{ $id }}" class="form-check-label" style="margin-left: 10px">{{ $name }}</label>
                       </li>
                     @endforeach
                   </ol>

@@ -69,5 +69,7 @@ class Kernel extends HttpKernel
         'cashier'          => \App\Http\Middleware\CashierMiddleware::class,
         'moderator'        => \App\Http\Middleware\ModeratorMiddleware::class,
         'accountant'       => \App\Http\Middleware\AccountantMiddleware::class,
+        'warehouse'        => \App\Http\Middleware\WarehouseMiddleware::class,
+        'dealer'           => \App\Http\Middleware\DealerMiddleware::class,
     ];
 }

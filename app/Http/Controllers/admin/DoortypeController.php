@@ -77,27 +77,30 @@ class DoortypeController extends Controller
     public function edit(Doortype $doortype)
     {
         $all_jobs = DB::table('jobs')->get(['id', 'name'])->toArray();
-    
+        $result = array_column($all_jobs, 'id', 'name');
         $jobs = explode(",", $doortype->jobs);
-       
-        $in_array = [];
-        $not_in_array = [];
-        foreach($all_jobs as $key => $value) {
-            $arr = array(
-                'id' => $value->id,
-                'name' => $value->name
-            );
+        $diff_array = array_diff($result, $jobs);
 
-            if ($pos = array_search($value->id, $jobs) !== false) 
-                array_push($in_array, $arr);
-            else 
-                array_push($not_in_array, $arr);
+        $in_array = [];
+        foreach($jobs as $key => $value) {
+            foreach($all_jobs as $k => $v) {
+                if ($v->id == $value) { 
+                    $arr = array(
+                        'id' => $v->id,
+                        'name' => $v->name
+                    );
+                    array_push($in_array, $arr);
+                }
+            }
+
         }
-        // dd($not_in_array);
+        
         $data = array(
-            'in_array' => $in_array,
-            'not_in_array' => $not_in_array,
-            'doortype' => $doortype
+            'jobs'       => $jobs,
+            'all_jobs'   => $all_jobs,
+            'in_array'   => $in_array,
+            'diff_array' => $diff_array,
+            'doortype'   => $doortype
         );
 
         return view('admin.doortype.update', $data);

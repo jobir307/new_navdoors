@@ -6,7 +6,7 @@
 </style>
 @section('content')
   <div class="container-fluid flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><a href="{{ route('orders') }}" class="fw-light">Shartnomalar / </a><span class="text-muted fw-light">Yangi shartnoma yaratish</h4>
+    <h4 class="fw-bold py-3 mb-4"><a href="{{ route('orders') }}" class="fw-light">Shartnomalar / </a><span class="fw-light">Yangi shartnoma yaratish(eshik)</h4>
     <div class="row">
       <div class="col-md-12">
         <div class="card mb-4">
@@ -15,13 +15,14 @@
             <div class="card-body doors_content">
               <div class="row">
                 <div class="mb-3 col-md-4">
-                  <label for="doortype" class="form-label">Eshik turi</label><span style="color: red; font-size: 20px;">*</span>
+                  <label for="doortype" class="form-label">Eshik turi</label><span style="color:red; font-size:20px;">*</span>
                   <select class="form-control js-example-basic-single" id="doortype" name="doortype">
                     @foreach($doortypes as $key => $value)
                       <option value="{{ $value->id }}">{{ $value->name }}</option>
                     @endforeach
                   </select>
                 </div>
+                @if (Auth::user()->role_id != 8)
                 <div class="mb-3 col-md-1 mt-2">
                   <div class="form-check mt-3">
                     <input
@@ -45,22 +46,38 @@
                     <label class="form-check-label" for="dealerRadio"> Diler </label>
                   </div>
                 </div>
-                <div class="mb-3 col-md-3 dealer_div" style="display: none;">
-                  <label for="diler" class="form-label">Diler</label><span style="color: red; font-size: 20px;">*</span>
-                  <select class="form-control js-example-basic-single" id="diler" name="dealer" style="width: 100%;">
-                    @foreach($dealers as $key => $value)
-                      <option value="{{ $value->id }}">{{ $value->name }}</option>
-                    @endforeach
-                  </select>
-                </div>
-                <div class="mb-3 col-md-3 customer_div">
-                  <label for="diler" class="form-label">Xaridor</label><span style="color: red; font-size: 20px;">*</span>
-                  <select class="form-select js-example-basic-single" name="customer">
-                    @foreach($customers as $key => $value)
-                      <option value="{{ $value->id }}">{{ $value->name }}</option>
-                    @endforeach
-                  </select>
-                </div>
+                @endif
+                @if (Auth::user()->role_id == 8)
+                  <div class="mb-3 col-md-4 dealer_div" style="display:block;">
+                    <label for="diler" class="form-label">Diler</label><span style="color:red; font-size:20px;">*</span>
+                    <select class="form-control js-example-basic-single" id="diler" name="dealer" style="width:100%;" disabled>
+                      @foreach($dealers as $key => $value)
+                        @if(Auth::user()->dealer_id == $value->id) 
+                          <option value="{{ $value->id }}" selected>{{ $value->name }}</option>
+                        @else
+                          <option value="{{ $value->id }}">{{ $value->name }}</option>
+                        @endif
+                      @endforeach
+                    </select>
+                  </div>
+                @else
+                  <div class="mb-3 col-md-3 dealer_div" style="display:none;">
+                    <label for="diler" class="form-label">Diler</label><span style="color:red; font-size:20px;">*</span>
+                    <select class="form-control js-example-basic-single" id="diler" name="dealer" style="width:100%;">
+                      @foreach($dealers as $key => $value)
+                        <option value="{{ $value->id }}">{{ $value->name }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                  <div class="mb-3 col-md-3 customer_div">
+                    <label for="diler" class="form-label">Xaridor</label><span style="color:red; font-size:20px;">*</span>
+                    <select class="form-control js-example-basic-single" name="customer">
+                      @foreach($customers as $key => $value)
+                        <option value="{{ $value->id }}">{{ $value->name }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                @endif
                 <div class="mb-3 col-md-4">
                   <label for="contract_number" class="form-label">Shartnoma raqami</label><span style="color: red; font-size: 20px;">*</span>
                   <input class="form-control" type="text" name="contract_number" id="contract_number" autocomplete="off" />
@@ -82,8 +99,9 @@
                 <div class="mb-3 col-md-2">
                   <div class="form-check">
                     <label for="with_installation" class="form-check-label">Ustanovka</label>
-                    <input class="form-check-input installation_check" type="checkbox" name="with_installation" id="with_installation" autocomplete="off" />
+                    <input class="form-check-input installation_check" type="checkbox" name="with_installation" id="with_installation">
                   </div>
+                  <input type="text" class="form-control installation_price mt-2" name="door_installation_price" style="display: none;" placeholder="Ustanovka narxi" autocomplete="off">
                 </div>
                 <div class="mb-3 col-md-2">
                   <div class="form-check">
@@ -118,6 +136,7 @@
                     <option value=""></option>
                     <option value="l">L</option>
                     <option value="p">P</option>
+                    <option value="l-p">L-P</option>
                   </select>
                 </div>
                 <div class="mb-3 col-md-1" style="max-width: 121px;">
@@ -140,9 +159,10 @@
                 <div class="mb-3 col-md-1" style="max-width: 121px;">
                   <label for="transom" class="form-label">Dobor</label>
                   <select class="form-select" id="transom" name="transom_side[]">
-                    <option value="0"></option>
+                    <option></option>
                     <option value="1">1</option>
                     <option value="2">2</option>
+                    <option value="1 oldidan">1 oldidan</option>
                   </select>
                 </div>
                 <div class="mb-3 col-md-1" style="max-width: 121px;">
@@ -199,7 +219,7 @@
                   <input type="hidden" name="hidden_loop_count[]" class="form-control">
                 </div>
                 <div class="mb-3 col-md-1" style="max-width: 121px;">
-                  <label for="jamb" class="form-label">Nalichnik</label>
+                  <label for="jamb" class="form-label">NKKS</label>
                   <button
                     id="loop"
                     class="btn btn-outline-success jamb_btn"
@@ -210,7 +230,14 @@
                   >
                     Tanlash
                   </button>
-                  <input type="hidden" id="jamb" name="jamb[]" class="form-control" data-bs-toggle="modal" data-bs-target="#modaljamb" placeholder="Nalichnikni tanlang" autocomplete="off">
+                  <input type="hidden" name="hidden_jamb_name[]" class="form-control">
+                  <input type="hidden" name="hidden_jamb_side[]" class="form-control">
+
+                  <input type="hidden" name="hidden_crown_id[]" class="form-control">
+                  <input type="hidden" name="hidden_crown_side[]" class="form-control">
+
+                  <input type="hidden" name="hidden_cube_name[]" class="form-control">
+                  <input type="hidden" name="hidden_cube_side[]" class="form-control">
                 </div>
                 <div class="mb-3 col-md-1" style="max-width: 121px;">
                   <label class="form-label" for="framoga_btn">Framoga</label>
@@ -220,9 +247,14 @@
                 </div>
               </div>
             </div>
-            <div class="card-footer float-end">
-              <div class="mt-2">
-                <button type="submit" class="btn btn-primary me-2">Saqlash</button>
+            <div class="card-footer">
+              <div class="row">
+                <div class="col-md-10">
+                  <textarea name="comments" class="form-control" rows="10" placeholder="Izoh qoldiring..."></textarea>
+                </div>
+                <div class="col-md-2">
+                  <button type="submit" class="btn btn-primary me-2 float-end">Saqlash</button>
+                </div>  
               </div>
             </div>
           </form>
@@ -244,6 +276,7 @@
               <option value=""></option>
               <option value="l">L</option>
               <option value="p">P</option>
+              <option value="l-p">L-P</option>
             </select>
           </div>
           <div class="mb-3 col-md-1" style="max-width: 121px;">
@@ -262,9 +295,10 @@
           </div>
           <div class="mb-3 col-md-1" style="max-width: 121px;">
             <select class="form-select" id="transom" name="transom_side[]">
-              <option value="0"></option>
+              <option></option>
               <option value="1">1</option>
               <option value="2">2</option>
+              <option value="1 oldidan">1 oldidan</option>
             </select>
           </div>
           <div class="mb-3 col-md-1" style="max-width: 121px;">
@@ -326,7 +360,14 @@
             >
               Tanlash
             </button>
-            <input type="hidden" id="jamb" name="jamb[]" class="form-control" data-bs-toggle="modal" data-bs-target="#modaljamb" placeholder="Nalichnikni tanlang" autocomplete="off">
+            <input type="hidden" name="hidden_jamb_name[]" class="form-control">
+            <input type="hidden" name="hidden_jamb_side[]" class="form-control">
+
+            <input type="hidden" name="hidden_crown_id[]" class="form-control">
+            <input type="hidden" name="hidden_crown_side[]" class="form-control">
+
+            <input type="hidden" name="hidden_cube_name[]" class="form-control">
+            <input type="hidden" name="hidden_cube_side[]" class="form-control">
           </div>
           <div class="mb-3 col-md-1" style="max-width: 121px;">
             <button class="btn btn-outline-secondary" type="button" id="framoga_btn">Tanlash</button>
@@ -425,7 +466,7 @@
           </div>
         </div>
 
-        <!-- Nalichnik -->
+        <!-- NKKS -->
         <div
           class="offcanvas offcanvas-end jamb_canvas"
           data-bs-scroll="true"
@@ -435,7 +476,7 @@
           aria-labelledby="offcanvasJambLabel"
         >
           <div class="offcanvas-header">
-            <h5 id="offcanvasJambLabel" class="offcanvas-title">Nalichnik tanlash</h5>
+            <h5 id="offcanvasJambLabel" class="offcanvas-title">NKKS tanlash</h5>
             <button
               type="button"
               class="btn-close text-reset"
@@ -443,31 +484,67 @@
               aria-label="Close"
             ></button>
           </div>
-          <div class="offcanvas-body jamb_content">
+          <div class="offcanvas-body">
             <div class="row mb-3">
-              <div class="col-md-12">
-                <button type="button" class="btn btn-sm btn-outline-success mt-4 jamb_plus" style="float: right;"><i class="bx bx-plus"></i></button>
-                <button type="button" class="btn btn-sm btn-outline-warning mt-4 jamb_minus" style="float: right; margin-right: 8px;"><i class="bx bx-minus"></i></button>
-              </div>
-            </div>
-            <div class="row jamb_div mb-3">
-              <div class="col-md-10">
+              <div class="col-md-9">
                 <label class="form-label" for="jamb_type">Nalichnik turi</label>
-                <select class="form-select jamb_id" id="jamb_type" name="jamb_id[]">
-                  <option value=""></option>
+                <select class="form-select jamb_name" id="jamb_type" name="jamb_name[]">
+                  <option></option>
                   @foreach($jambs as $key => $value)
-                    <option value="{{ $value->id }}">{{ $value->name }}</option>
+                    <option value="{{ $value->name }}">{{ $value->name }}</option>
                   @endforeach
                 </select>
               </div>
-              <div class="col-md-2">
-                <label class="form-label" for="jamb_count">Soni</label>
-                <input class="form-control jamb_count" type="text" id="jamb_count" name="jamb_count[]">
+              <div class="col-md-3">
+                <label class="form-label" for="jamb_side">Komplekt</label>
+                <select name="jamb_side[]" id="jamb_side" class="form-select jamb_side">
+                  <option value="0"></option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                </select>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-9">
+                <label class="form-label" for="crown_type">Korona</label>
+                <select class="form-select crown_id" id="crown_type" name="crown_id[]">
+                  <option></option>
+                  @foreach($crowns as $key => $value)
+                    <option value="{{ $value->id }}">{{ $value->name }}({{ $value->len }}mm)</option>
+                  @endforeach
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label" for="crown_side">Komplekt</label>
+                <select name="crown_side[]" id="crown_side" class="form-select crown_side">
+                  <option value="0"></option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                </select>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-9">
+                <label class="form-label" for="cube_type">Kubik va sapog</label>
+                <select class="form-select cube_name" id="cube_type" name="cube_name[]">
+                  <option></option>
+                  @foreach($cubes as $key => $value)
+                    <option value="{{ $value->name }}">{{ $value->name }}</option>
+                  @endforeach
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label" for="cube_side">Komplekt</label>
+                <select name="cube_side[]" id="cube_side" class="form-select cube_side">
+                  <option value="0"></option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                </select>
               </div>
             </div>
           </div>
-          <div class="offcanvas-footer" style="margin-bottom: 20px;">
-            <button type="button" class="btn btn-primary mb-2 d-grid w-100 jamb_save">Saqlash</button>
+          <div class="offcanvas-footer" style="margin-bottom:20px;">
+            <button type="button" class="btn btn-primary mb-2 d-grid w-100 jccb_save">Saqlash</button>
             <button
               type="button"
               class="btn btn-outline-secondary d-grid w-100"
@@ -481,16 +558,20 @@
 
         <!-- Jamb without labels -->
         <div class="row jamb_without_labels mb-3" style="display: none;">
-          <div class="col-md-10">
-            <select class="form-select jamb_id" id="jamb_type" name="jamb_id[]">
-              <option value=""></option>
+          <div class="col-md-9">
+            <select class="form-select jamb_name" id="jamb_type" name="jamb_name[]">
+              <option></option>
               @foreach($jambs as $key => $value)
-                <option value="{{ $value->id }}">{{ $value->name }}</option>
+                <option value="{{ $value->name }}">{{ $value->name }}</option>
               @endforeach
             </select>
           </div>
-          <div class="col-md-2">
-            <input class="form-control jamb_count" type="text" id="jamb_count" name="jamb_count[]">
+          <div class="col-md-3">
+            <select name="jamb_side[]" id="jamb_side" class="form-select jamb_side">
+              <option value="0"></option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+            </select>
           </div>
         </div>
 
@@ -566,20 +647,6 @@
       let i = 1;
       let door_parameters_div_index = 0;
 
-      $('body').on('click', '.jamb_plus', function(){
-        let targetDiv = document.getElementsByClassName("jamb_without_labels")[0];
-        $(".jamb_content").last().append('<div class="row jamb_div mb-3">'+targetDiv.innerHTML+'</div>');
-        i++;
-      });
-
-      $('body').on('click', '.jamb_minus', function(){
-        if(i>1){
-          let childDiv = $('body').find('.jamb_content .row').last();
-          childDiv.remove();
-          i--;
-        }
-      });
-
       let j = 1;
       $('body').on('click', '.door_parameters_plus', function(){
         let targetDiv = document.getElementsByClassName("door_parameters_without_labels")[0];
@@ -601,22 +668,34 @@
         door_parameters_div_index = index;
       });
 
-      $('body').on('click', '.jamb_save', function() {
-        let jamb_parameters = [{jamb: "", jamb_count: 0}];
-        let jambs = document.getElementsByClassName("jamb_id");
-        let jamb_counts = document.getElementsByName('jamb_count[]');
-        for (let i = 0; i < jamb_counts.length; i++) {
-          jamb_parameters[i] = {jamb: jambs[i].value, jamb_count: jamb_counts[i].value};
-        }
-        $('.doors_content').find('input[name="jamb[]"]').eq(door_parameters_div_index).val(JSON.stringify(jamb_parameters));
-        
-        let divsToRemove = document.getElementsByClassName("jamb_div");
-        for (var i = divsToRemove.length-1; i > 0; i--) {
-          divsToRemove[i].remove();
-        }
+      $('body').on('click', '.jccb_save', function() {
+        let jamb_name = $('.jamb_name').val();
+        let jamb_side = $('.jamb_side').val();
 
-        $(".jamb_id").val("");
-        $(".jamb_count").val("");
+        let crown_id = $('.crown_id').val();
+        let crown_side = $('.crown_side').val();
+
+        let cube_name = $('.cube_name').val();
+        let cube_side = $('.cube_side').val();
+
+        $('.door_parameters_div').find('input[name="hidden_jamb_name[]"]').eq(door_parameters_div_index).val(jamb_name);
+        $('.door_parameters_div').find('input[name="hidden_jamb_side[]"]').eq(door_parameters_div_index).val(jamb_side);
+
+        $('.door_parameters_div').find('input[name="hidden_crown_id[]"]').eq(door_parameters_div_index).val(crown_id);
+        $('.door_parameters_div').find('input[name="hidden_crown_side[]"]').eq(door_parameters_div_index).val(crown_side);
+
+        $('.door_parameters_div').find('input[name="hidden_cube_name[]"]').eq(door_parameters_div_index).val(cube_name);
+        $('.door_parameters_div').find('input[name="hidden_cube_side[]"]').eq(door_parameters_div_index).val(cube_side);
+
+        $(".jamb_name").val("");
+        $(".jamb_side").val("");
+
+        $(".crown_id").val("");
+        $(".crown_side").val("");
+
+        $(".cube_name").val("");
+        $(".cube_side").val("");
+
         $("#jambCanvasClose").click();
       });
 
@@ -638,10 +717,10 @@
       });
 
       $('body').on('click', '.save_framoga', function(){
-        let framoga_type = document.getElementsByClassName('framoga_type').item(0);
-        let framoga_figure = document.getElementsByClassName("framoga_figure").item(0);
-        $('.doors_content').find('input[name="hidden_framoga_type[]"]').eq(door_parameters_div_index).val(framoga_type.value);
-        $('.doors_content').find('input[name="hidden_framoga_figure[]"]').eq(door_parameters_div_index).val(framoga_figure.value);
+        let framoga_type = $('.framoga_type').val();
+        let framoga_figure = $('.framoga_figure').val();
+        $('.door_parameters_div').find('input[name="hidden_framoga_type[]"]').eq(door_parameters_div_index).val(framoga_type);
+        $('.door_parameters_div').find('input[name="hidden_framoga_figure[]"]').eq(door_parameters_div_index).val(framoga_figure);
         $(".framoga_type").val('');
         $(".framoga_figure").val('');
         $("#modalframoga").modal("hide");
@@ -661,30 +740,6 @@
         $(".loop_count_select").val('');
         let closeCanvas = document.querySelector('[data-bs-dismiss="offcanvas"]');
         closeCanvas.click();
-      });
-
-      $('body').on('change', '#doortype', function(){ 
-        let doortype_id = $(this).val();
-        $.ajax({
-          headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-          },
-          url: "{{ route('reload-jamb') }}",
-          method: "POST",
-          data: {doortype_id: doortype_id},
-          success: function(data) {
-            if (data.jambs.length > 0) {
-              $.each(data.jambs, function(index, jamb) {
-                $('.jamb_div select, .jamb_without_labels select').html('<option></option>');
-                $('.jamb_div select, .jamb_without_labels select').append($("<option></option>")
-                      .attr("value", jamb.id)
-                      .text(jamb.name));
-              });
-            } else {
-              $('.jamb_div select, .jamb_without_labels select').html('<option></option>');
-            }
-          }
-        }); 
       });
 
       $('body').on('change', '.courier_check', function(){
@@ -742,6 +797,14 @@
         $("#glass_params_modal #glasscount").val(0);
         
         $("#glass_params_modal").modal("hide");
+      });
+
+      $('body').on('change', '.installation_check', function(){
+        if ($(this).is(':checked')) {
+          $("input.installation_price").css("display", "block");
+        } else {
+          $("input.installation_price").css("display", "none");
+        }
       });
 
       $('.js-example-basic-single').select2();
